@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · Deutsch mit Rawad Premium</title>
+    
+    <!-- Styles & Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+     
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transition: height var(--transition-normal);
+        }
+        
+        .stat-card:hover::before {
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+        
+        .stat-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--gray-400);
+            margin-bottom: 5px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--light);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, 
+                rgba(139, 92, 246, 0.2), 
+                rgba(249, 115, 22, 0.2), 
+                rgba(6, 182, 212, 0.2)
+            );
+            border-radius: var(--radius-2xl);
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-content h1 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-content h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-content p {
+            font-size: 1.2rem;
+            color: var(--gray-300);
+            margin-bottom: 20px;
+        }
+        
+        .last-active {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-400);
+        }
+        
+        .last-active i {
+            color: var(--success);
+        }
+        
+        .category-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--gray-400);
+            padding: 12px 30px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .category-tab i {
+            font-size: 1.2rem;
+        }
+        
+        .category-tab:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            color: var(--light);
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-full);
+            color: var(--light);
+            font-size: 1rem;
+            transition: all var(--transition-normal);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 30px var(--purple-glow);
+        }
+        
+        .search-box input::placeholder {
+            color: var(--gray-600);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--gray-400);
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: var(--gray-500);
+            margin-bottom: 30px;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="dashboard-nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-gem"></i>
+                    <span>Deutsch mit Rawad</span>
+                    <span class="premium-badge">
+                        <i class="fas fa-crown"></i>
+                        PREMIUM
+                    </span>
+                </div>
+                
+                <div class="user-menu">
+                    <div class="welcome-user" id="userMenu">
+                        <i class="fas fa-user-astronaut"></i>
+                        <span id="currentUser">Lädt...</span>
+                    </div>
+                    
+                    <button id="logoutBtn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Banner الترحيب -->
+            <div class="welcome-banner">
+                <div class="welcome-content">
+                    <h1>
+                        Willkommen zurück, 
+                        <span id="userName">...</span>
+                        <i class="fas fa-hand-peace" style="color: var(--gold);"></i>
+                    </h1>
+                    <p>Hier sind alle deine Premium-Inhalte - bereit zum Lernen!</p>
+                    <div class="last-active" id="lastActive">
+                        <i class="fas fa-clock"></i>
+                        <span>Letzter Besuch: Heute</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات سريعة -->
+            <div class="dashboard-stats" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Lesen Teile</h3>
+                        <div class="stat-number" id="lesenCount">4</div>
+                        <div class="stat-label">Teile 2-5</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Hören Teile</h3>
+                        <div class="stat-number" id="horenCount">4</div>
+                        <div class="stat-label">Teile 1-4</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Aufgaben</h3>
+                        <div class="stat-number" id="totalTasks">50+</div>
+                        <div class="stat-label">Gesamt</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Dein Level</h3>
+                        <div class="stat-number" id="userLevel">Profi</div>
+                        <div class="stat-label">Premium Member</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويبات الأقسام -->
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="all">
+                    <i class="fas fa-compass"></i>
+                    Alle
+                </button>
+                <button class="category-tab" data-category="lesen">
+                    <i class="fas fa-book"></i>
+                    Lesen
+                </button>
+                <button class="category-tab" data-category="horen">
+                    <i class="fas fa-headphones"></i>
+                    Hören
+                </button>
+            </div>
+
+            <!-- مربع البحث -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Teil suchen... (z.B. 'Lesen 2', 'Hören 3')">
+            </div>
+
+            <!-- قسم Leseverstehen Premium -->
+            <section class="dashboard-section" id="lesenSection">
+                <h2>
+                    <i class="fas fa-book-open"></i>
+                    Leseverstehen Premium
+                    <span class="badge-free" style="background: linear-gradient(135deg, var(--primary), var(--secondary));">
+                        Teile 2-5
+                    </span>
+                </h2>
+                <div class="premium-grid" id="lesenPremiumGrid"></div>
+            </section>
+
+            <!-- قسم Hörverstehen Premium -->
+            <section class="dashboard-section" id="horenSection">
+                <h2>
+                    <i class="fas fa-headphones"></i>
+                    Hörverstehen Premium
+                    <span class="badge-free" style="background: linear-gradient(135deg, var(--secondary), var(--accent));">
+                        Teile 1-4
+                    </span>
+                </h2>
+                <div class="premium-grid" id="horenPremiumGrid"></div>
+            </section>
+
+            <!-- حالة عدم وجود نتائج -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>Keine Ergebnisse gefunden</h3>
+                <p>Versuche einen anderen Suchbegriff</p>
+                <button class="btn-secondary" onclick="clearSearch()">
+                    <i class="fas fa-times"></i>
+                    Zurücksetzen
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>
+                <i class="fas fa-gem"></i>
+                Deutsch mit Rawad Premium · © 2026
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="supabase.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ========== التحقق من الجلسة ==========
+            if (!window.checkSession || !window.checkSession()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // ========== عناصر الصفحة ==========
+            const elements = {
+                currentUser: document.getElementById('currentUser'),
+                userName: document.getElementById('userName'),
+                lesenGrid: document.getElementById('lesenPremiumGrid'),
+                horenGrid: document.getElementById('horenPremiumGrid'),
+                searchInput: document.getElementById('searchInput'),
+                categoryTabs: document.querySelectorAll('.category-tab'),
+                lesenSection: document.getElementById('lesenSection'),
+                horenSection: document.getElementById('horenSection'),
+                emptyState: document.getElementById('emptyState'),
+                lastActive: document.getElementById('lastActive')
+            };
+
+            // ========== بيانات المستخدم ==========
+            const username = window.getCurrentUsername ? window.getCurrentUsername() : 'Premium User';
+            if (elements.currentUser) elements.currentUser.textContent = username;
+            if (elements.userName) elements.userName.textContent = username;
+
+            // ========== تحديث آخر نشاط ==========
+            const lastVisit = localStorage.getItem('lastVisit');
+            const today = new Date().toLocaleDateString('de-DE');
+            
+            if (lastVisit) {
+                if (lastVisit === today) {
+                    elements.lastActive.innerHTML = '<i class="fas fa-clock"></i><span>Heute aktiv</span>';
+                } else {
+                    elements.lastActive.innerHTML = `<i class="fas fa-history"></i><span>Letzter Besuch: ${lastVisit}</span>`;
+                }
+            }
+            localStorage.setItem('lastVisit', today);
+
+            // ========== قوائم الأقسام المدفوعة ==========
+            const premiumFiles = {
+                lesen: ['lesen2', 'lesen3', 'lesen4', 'lesen5'],
+                horen: ['horen1', 'horen2', 'horen3', 'horen4']
+            };
+
+            // ========== تحميل وعرض الأقسام ==========
+            async function loadPremiumSections() {
+                // عرض حالة التحميل
+                showLoading();
+
+                // تفريغ أي سكلتون قديم عند بدء التحميل الفعلي
+                elements.lesenGrid.innerHTML = '';
+                elements.horenGrid.innerHTML = '';
+
+                // تحميل كل الأقسام بالتوازي مع الاستفادة من الكاش
+                const lesenPromises = premiumFiles.lesen.map(async (file) => {
+                    const data = await window.loadQuestionsFile(file);
+                    const card = createSectionCard(file, data, 'Lesen');
+                    elements.lesenGrid.appendChild(card);
+                });
+
+                const horenPromises = premiumFiles.horen.map(async (file) => {
+                    const data = await window.loadQuestionsFile(file);
+                    const card = createSectionCard(file, data, 'Hören');
+                    elements.horenGrid.appendChild(card);
+                });
+
+                await Promise.all([...lesenPromises, ...horenPromises]);
+
+                // تحديث الإحصائيات بعد اكتمال التحميل
+                updateStats();
+            }
+
+            // ========== إنشاء بطاقة قسم ==========
+            function createSectionCard(fileKey, data, category) {
+                const card = document.createElement('div');
+                card.className = 'premium-item';
+                card.setAttribute('data-category', category.toLowerCase());
+                card.setAttribute('data-file', fileKey);
+                
+                // استخراج العنوان
+                let title = '';
+                let description = '';
+                let icon = category === 'Lesen' ? 'fa-book' : 'fa-headphones';
+                let count = 0;
+                
+                if (data) {
+                    title = data.name || `${category} Teil ${fileKey.replace(/\D/g, '')}`;
+                    
+                    if (data.sections) {
+                        count = data.sections.length;
+                        description = `${count} ${count === 1 ? 'Teil' : 'Teile'}`;
+                    } else if (Array.isArray(data)) {
+                        count = data.length;
+                        description = `${count} ${count === 1 ? 'Geschichte' : 'Geschichten'}`;
+                    }
+                } else {
+                    title = `${category} Teil ${fileKey.replace(/\D/g, '')}`;
+                    description = 'Laden fehlgeschlagen';
+                }
+                
+                // حفظ في localStorage للتقييم
+                const progress = JSON.parse(localStorage.getItem(`progress_${fileKey}`)) || {
+                    completed: 0,
+                    total: count,
+                    lastAccessed: null
+                };
+                
+                const progressPercent = count > 0 ? Math.round((progress.completed / count) * 100) : 0;
+                
+                card.innerHTML = `
+                    <div class="premium-item-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="premium-item-content">
+                        <h3>${title}</h3>
+                        <p>
+                            <i class="fas fa-tasks"></i>
+                            ${description}
+                        </p>
+                        ${count > 0 ? `
+                            <div class="item-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <span class="progress-text">${progress.completed}/${count}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <button class="premium-item-btn" data-file="${fileKey}">
+                        <span>Öffnen</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                `;
+
+                // إضافة حدث النقر
+                const btn = card.querySelector('.premium-item-btn');
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    // حفظ وقت الوصول
+                    const progress = JSON.parse(localStorage.getItem(`progress_${fileKey}`)) || {
+                        completed: 0,
+                        total: count,
+                        lastAccessed: null
+                    };
+                    progress.lastAccessed = new Date().toISOString();
+                    localStorage.setItem(`progress_${fileKey}`, JSON.stringify(progress));
+                    
+                    window.location.href = `viewer.html?file=${fileKey}`;
+                });
+
+                return card;
+            }
+
+            // ========== عرض حالة التحميل (Premium Skeleton) ==========
+            function showLoading() {
+                const skeletonHTML = `
+                    <div class="premium-skeleton-card">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-lines">
+                            <div class="skeleton-line w-60"></div>
+                            <div class="skeleton-line w-40"></div>
+                            <div class="skeleton-line w-80"></div>
+                        </div>
+                    </div>
+                    <div class="premium-skeleton-card">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-lines">
+                            <div class="skeleton-line w-60"></div>
+                            <div class="skeleton-line w-40"></div>
+                            <div class="skeleton-line w-80"></div>
+                        </div>
+                    </div>
+                `;
+
+                if (elements.lesenGrid.children.length === 0) {
+                    elements.lesenGrid.innerHTML = skeletonHTML;
+                }
+                if (elements.horenGrid.children.length === 0) {
+                    elements.horenGrid.innerHTML = skeletonHTML;
+                }
+            }
+
+            // ========== تحديث الإحصائيات ==========
+            function updateStats() {
+                const lesenCount = document.getElementById('lesenCount');
+                const horenCount = document.getElementById('horenCount');
+                const totalTasks = document.getElementById('totalTasks');
+                
+                if (lesenCount) lesenCount.textContent = premiumFiles.lesen.length;
+                if (horenCount) horenCount.textContent = premiumFiles.horen.length;
+                
+                // تقدير عدد المهام
+                let total = 0;
+                document.querySelectorAll('.premium-item').forEach(item => {
+                    const progressText = item.querySelector('.progress-text');
+                    if (progressText) {
+                        const [completed, totalNum] = progressText.textContent.split('/').map(Number);
+                        total += totalNum || 0;
+                    }
+                });
+                
+                if (totalTasks) totalTasks.textContent = total || '50+';
+            }
+
+            // ========== وظيفة البحث ==========
+            function filterItems(searchTerm) {
+                searchTerm = searchTerm.toLowerCase().trim();
+                const items = document.querySelectorAll('.premium-item');
+                let visibleCount = 0;
+                
+                items.forEach(item => {
+                    const title = item.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const matches = title.includes(searchTerm) || searchTerm === '';
+                    item.style.display = matches ? 'flex' : 'none';
+                    if (matches) visibleCount++;
+                });
+                
+                // إظهار/إخفاء الأقسام حسب الحاجة
+                const lesenVisible = document.querySelectorAll('#lesenSection .premium-item[style="display: flex;"]').length > 0;
+                const horenVisible = document.querySelectorAll('#horenSection .premium-item[style="display: flex;"]').length > 0;
+                
+                elements.lesenSection.style.display = lesenVisible ? 'block' : 'none';
+                elements.horenSection.style.display = horenVisible ? 'block' : 'none';
+                
+                // إظهار رسالة عدم وجود نتائج
+                if (visibleCount === 0 && searchTerm !== '') {
+                    elements.emptyState.style.display = 'block';
+                } else {
+                    elements.emptyState.style.display = 'none';
+                }
+            }
+
+            // ========== تصفية حسب الفئة ==========
+            function filterByCategory(category) {
+                const items = document.querySelectorAll('.premium-item');
+                
+                items.forEach(item => {
+                    if (category === 'all') {
+                        item.style.display = 'flex';
+                    } else {
+                        const itemCategory = item.getAttribute('data-category');
+                        item.style.display = itemCategory === category ? 'flex' : 'none';
+                    }
+                });
+                
+                // تحديث ظهور الأقسام
+                if (category === 'all') {
+                    elements.lesenSection.style.display = 'block';
+                    elements.horenSection.style.display = 'block';
+                } else if (category === 'lesen') {
+                    elements.lesenSection.style.display = 'block';
+                    elements.horenSection.style.display = 'none';
+                } else if (category === 'horen') {
+                    elements.lesenSection.style.display = 'none';
+                    elements.horenSection.style.display = 'block';
+                }
+                
+                elements.emptyState.style.display = 'none';
+            }
+
+            // ========== مسح البحث ==========
+            window.clearSearch = function() {
+                if (elements.searchInput) {
+                    elements.searchInput.value = '';
+                    filterItems('');
+                    
+                    // إعادة تفعيل التبويب النشط
+                    const activeTab = document.querySelector('.category-tab.active');
+                    if (activeTab) {
+                        filterByCategory(activeTab.dataset.category);
+                    }
+                }
+            };
+
+            // ========== إضافة مستمعي الأحداث ==========
+            
+            // حدث البحث
+            if (elements.searchInput) {
+                elements.searchInput.addEventListener('input', (e) => {
+                    filterItems(e.target.value);
+                });
+            }
+            
+            // أحداث التبويبات
+            elements.categoryTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    elements.categoryTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const category = tab.dataset.category;
+                    filterByCategory(category);
+                    
+                    // مسح البحث
+                    if (elements.searchInput) {
+                        elements.searchInput.value = '';
+                    }
+                });
+            });
+
+            // ========== تسجيل الخروج ==========
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (window.logout) {
+                        window.logout();
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            // ========== بدأ التحميل ==========
+            loadPremiumSections();
+
+            // ========== حفظ حالة التبويب النشط ==========
+            const savedTab = localStorage.getItem('activeDashboardTab');
+            if (savedTab) {
+                const tab = document.querySelector(`.category-tab[data-category="${savedTab}"]`);
+                if (tab) {
+                    tab.click();
+                }
+            }
+            
+            // حفظ عند تغيير التبويب
+            elements.categoryTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    localStorage.setItem('activeDashboardTab', tab.dataset.category);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* تنسيقات إضافية */
+        .item-progress {
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--success-light));
+            border-radius: var(--radius-full);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-left: 8px;
+        }
+        
+        .premium-item {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .premium-item:hover {
+            transform: translateX(10px) scale(1.02);
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-content h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .category-tabs {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-banner {
+                padding: 25px;
+            }
+            
+            .welcome-content h1 {
+                font-size: 1.8rem;
+            }
+            
+            .user-menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</body>
+</html>

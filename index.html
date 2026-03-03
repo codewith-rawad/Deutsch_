@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch mit Rawad · Lerne Deutsch wie ein Profi</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Lerne Deutsch mit Rawad - Kostenlose und Premium Übungen für Leseverstehen und Hörverstehen. Interaktive Geschichten mit Sofort-Feedback!">
+    <meta name="keywords" content="Deutsch lernen, Leseverstehen, Hörverstehen, Deutsch Übungen, Rawad, German learning">
+    <meta name="author" content="Rawad">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Deutsch mit Rawad">
+    <meta property="og:description" content="Lerne Deutsch mit interaktiven Geschichten">
+    <meta property="og:type" content="website">
+    
+    <!-- Styles & Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* تأثيرات إضافية للصفحة الرئيسية */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.1;
+            animation: floatShape 20s infinite alternate;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 5%;
+            animation-duration: 25s;
+        }
+        
+        .shape-2 {
+            width: 400px;
+            height: 400px;
+            bottom: 10%;
+            right: 5%;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+        
+        .shape-3 {
+            width: 200px;
+            height: 200px;
+            top: 40%;
+            right: 30%;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            animation-duration: 20s;
+            animation-delay: -10s;
+        }
+        
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.2); }
+        }
+        
+        .visitor-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            font-size: 0.9rem;
+            margin-left: 20px;
+        }
+        
+        .visitor-counter i {
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-ring {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+        
+        .progress-ring-circle {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-ring-circle-progress {
+            stroke: url(#gradient);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- أشكال عائمة خلفية -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- شريط التنقل المتطور -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-gem"></i>
+                    <span data-en="Deutsch mit Rawad" data-ar="تعلم الألمانية مع رواد">Deutsch mit Rawad</span>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="#free-content" class="nav-link">
+                        <i class="fas fa-book-open"></i>
+                        <span data-en="Free content" data-ar="المحتوى المجاني">Free content</span>
+                    </a>
+                    <a href="#premium" class="nav-link">
+                        <i class="fas fa-crown"></i>
+                        <span data-en="Premium" data-ar="بريميوم">Premium</span>
+                    </a>
+                    <a href="login.html" class="btn-login">
+                        <i class="fas fa-user-astronaut"></i>
+                        <span data-en="Login" data-ar="تسجيل الدخول">Login</span>
+                        <span class="visitor-counter">
+                            <i class="fas fa-eye"></i>
+                            <span id="visitorCount">0</span>
+                        </span>
+                    </a>
+                    <button id="langToggle" class="btn-login" style="margin-inline-start: 10px;">
+                        <i class="fas fa-globe"></i>
+                        <span>EN</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- قسم الترحيب الأسطوري -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-free">
+                        <i class="fas fa-star"></i>
+                        <span data-en="Start for free" data-ar="ابدأ مجاناً الآن">Start for free</span>
+                    </span>
+                </div>
+                
+                <h1>
+                    <span data-en="Learn German" data-ar="تعلّم الألمانية">Learn German</span><br>
+                    <span class="glow-text" data-en="smarter & faster" data-ar="بذكاء وسرعة">smarter & faster</span>
+                </h1>
+                
+                <p>
+                    🚀 <span data-en="With our interactive exercises for reading and listening." data-ar="مع تمارين تفاعلية للفهم القرائي والسمعي">With our interactive exercises for reading and listening.</span>
+                    <br class="mobile-hide">
+                    Sofortiges Feedback & Punkte sammeln!
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label" data-en="Interactive stories" data-ar="قصة تفاعلية">Interactive stories</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label" data-en="Questions & tasks" data-ar="سؤال وتمرين">Questions & tasks</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label" data-en="Always available" data-ar="متاح دائماً">Always available</span>
+                    </div>
+                </div>
+                
+                <div class="hero-buttons">
+                    <a href="#free-content" class="btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        <span data-en="Start now" data-ar="ابدأ مجاناً">Start now</span>
+                    </a>
+                    <a href="#premium" class="btn-secondary">
+                        <i class="fas fa-gem"></i>
+                        <span data-en="Explore Premium" data-ar="اكتشف البريميوم">Explore Premium</span>
+                    </a>
+                </div>
+                
+                <div class="hero-features">
+                    <div class="feature">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span data-en="Instant feedback" data-ar="تصحيح فوري للإجابات">Instant feedback</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span data-en="Points & progress tracking" data-ar="نقاط وتتبع للتقدّم">Points & progress tracking</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span data-en="Arabic & German explanations" data-ar="شروحات بالعربية والألمانية">Arabic & German explanations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- القسم المجاني - Lesen Teil 1 -->
+    <section id="free-content" class="free-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h2>
+                    <span data-en="Reading comprehension – Part 1" data-ar="الفهم القرائي – الجزء ١">Reading comprehension – Part 1</span>
+                    <span class="badge-free">
+                        <i class="fas fa-gift"></i>
+                        <span data-en="Free" data-ar="مجاني">Free</span>
+                    </span>
+                </h2>
+                <p>
+                    ✨ <span data-en="Start with these 6 free stories, no login required." data-ar="ابدأ مع هذه القصص الست مجاناً، بدون تسجيل دخول.">Start with these 6 free stories, no login required.</span>
+                    <br>
+                    <span style="color: var(--gray-400); font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <span data-en="Reading parts 2–5 and all listening exercises are Premium." data-ar="الأجزاء ٢–٥ من القراءة وكل تمارين السمع ضمن البريميوم">Reading parts 2–5 and all listening exercises are Premium.</span>
+                    </span>
+                </p>
+            </div>
+
+            <!-- شبكة القصص المجانية -->
+            <div class="stories-grid" id="freeStoriesGrid">
+                <!-- يتم التعبئة عبر JavaScript -->
+            </div>
+
+            <!-- شريط التقدم -->
+            <div class="free-progress">
+                <div class="progress-info">
+                    <span>
+                        <i class="fas fa-flag-checkered"></i>
+                        <span data-en="Your progress in the free part" data-ar="تقدّمك في الجزء المجاني">Your progress in the free part</span>
+                    </span>
+                    <span id="freeProgressText">0/6 stories</span>
+                </div>
+                <div class="viewer-progress-wrap">
+                    <div class="viewer-progress-fill" id="freeProgressBar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- القسم المدفوع - Premium Showcase -->
+    <section id="premium" class="premium-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-crown" style="color: var(--gold);"></i>
+                </div>
+                <h2 style="background: linear-gradient(135deg, var(--gold), var(--gold-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <span data-en="Premium area" data-ar="منطقة البريميوم">Premium area</span>
+                </h2>
+                <p>
+                    🌟 <span data-en="All advanced parts for reading and listening. One-time payment – lifetime access." data-ar="جميع الأجزاء المتقدّمة للقراءة والسمع. دفع مرّة واحدة – وصول مدى الحياة.">All advanced parts for reading and listening. One-time payment – lifetime access.</span>
+                </p>
+            </div>
+
+            <!-- بطاقات العرض -->
+            <div class="premium-showcase">
+                <!-- Lesen Premium Card -->
+                <div class="premium-card">
+                    <div class="premium-badge">
+                        <i class="fas fa-star"></i>
+                        Beliebt
+                    </div>
+                    <div class="premium-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 data-en="Reading – Parts 2–5" data-ar="الفهم القرائي – الأجزاء ٢–٥">Reading – Parts 2–5</h3>
+                    <p data-en="📚 Four additional parts with over 40 exercises" data-ar="📚 أربعة أجزاء إضافية مع أكثر من ٤٠ تمريناً">📚 Four additional parts with over 40 exercises</p>
+                    
+                    <ul class="premium-features">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 2: comprehension tasks" data-ar="الجزء ٢: تمارين الفهم">Part 2: comprehension tasks</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 3: matching tasks" data-ar="الجزء ٣: تمارين المطابقة">Part 3: matching tasks</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 4: yes/no questions" data-ar="الجزء ٤: أسئلة بنعم/لا">Part 4: yes/no questions</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 5: advanced texts" data-ar="الجزء ٥: نصوص متقدّمة">Part 5: advanced texts</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="premium-price">
+                        <span class="price" data-en="One-time payment" data-ar="دفعٌ واحد فقط">One-time payment</span>
+                    </div>
+                    
+                    <div class="premium-lock">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+
+                <!-- Hören Premium Card -->
+                <div class="premium-card featured">
+                    <div class="premium-badge">
+                        <i class="fas fa-fire"></i>
+                        NEU
+                    </div>
+                    <div class="premium-icon">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <h3 data-en="Listening – Parts 1–4" data-ar="الفهم السمعي – الأجزاء ١–٤">Listening – Parts 1–4</h3>
+                    <p data-en="🎧 Four parts with authentic listening texts" data-ar="🎧 أربعة أجزاء مع نصوص سمعية حقيقية">🎧 Four parts with authentic listening texts</p>
+                    
+                    <ul class="premium-features">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 1: daily conversations" data-ar="الجزء ١: حوارات يومية">Part 1: daily conversations</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 2: phone calls" data-ar="الجزء ٢: مكالمات هاتفية">Part 2: phone calls</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 3: short stories" data-ar="الجزء ٣: قصص قصيرة">Part 3: short stories</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span data-en="Part 4: who said what?" data-ar="الجزء ٤: من الذي قال ماذا؟">Part 4: who said what?</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="premium-price">
+                        <span class="price" data-en="One-time payment" data-ar="دفعٌ واحد">One-time payment</span>
+                        <span class="old-price">50€</span>
+                        <span class="discount">-40%</span>
+                    </div>
+                    
+                    <div class="premium-lock">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم الاتصال -->
+            <div class="premium-cta">
+                <div class="cta-content">
+                    <h3>
+                        <i class="fab fa-telegram"></i>
+                        <span data-en="Contact us now" data-ar="تواصل معنا الآن">Contact us now</span>
+                    </h3>
+                    <p data-en="After payment you will receive your personal login details within 24 hours." data-ar="بعد الدفع ستصلك بيانات الدخول الخاصة بك خلال ٢٤ ساعة.">After payment you will receive your personal login details within 24 hours.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="https://t.me/mez123794" target="_blank" class="telegram-btn">
+                            <i class="fab fa-telegram"></i>
+                            @mez123794
+                        </a>
+                        <a href="login.html" class="btn-secondary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span data-en="Already a customer?" data-ar="هل لديك حساب بريميوم؟">Already a customer?</span>
+                        </a>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <span data-en="Payment methods:" data-ar="طرق الدفع المتاحة:">Payment methods:</span>
+                        <i class="fab fa-cc-paypal"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-cc-visa"></i>
+                        <span>🇩🇪 Überweisung</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم المميزات الإضافية -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Sofortiges Feedback</h3>
+                    <p>Erfahre direkt nach jeder Antwort, ob du richtig liegst.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Fortschritt verfolgen</h3>
+                    <p>Sieh deine Punkte und deinen Lernfortschritt.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3>Zweisprachig</h3>
+                    <p>Erklärungen auf Deutsch und Arabisch.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Design</h3>
+                    <p>Lerne auf allen Geräten - Handy, Tablet, PC.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-gem"></i>
+                    <span>Deutsch mit Rawad</span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#free-content" data-en="Free content" data-ar="المحتوى المجاني">Free content</a>
+                    <a href="#premium" data-en="Premium" data-ar="البريميوم">Premium</a>
+                    <a href="login.html" data-en="Login" data-ar="تسجيل الدخول">Login</a>
+                    <a href="#" onclick="showImpressum()" data-en="Imprint" data-ar="بيانات الناشر">Imprint</a>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://t.me/mez123794" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="#" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" target="_blank">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+                
+                <div class="footer-copyright">
+                    <p data-en="© 2026 Deutsch mit Rawad · All rights reserved" data-ar="© ٢٠٢٦ تعلم الألمانية مع رواد · جميع الحقوق محفوظة">© 2026 Deutsch mit Rawad · All rights reserved</p>
+                    <p class="made-with">
+                        Mit <i class="fas fa-heart" style="color: var(--danger);"></i> gemacht für dich
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toastNotification" class="toast-notification">
+        <i id="toastIcon" class="fas fa-info-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="supabase.js"></script>
+    <script>
+        // إعداد اللغة والثيم
+        window.currentLang = localStorage.getItem('ui_lang') || 'en';
+
+        function applyLanguage(lang) {
+            window.currentLang = lang === 'ar' ? 'ar' : 'en';
+            document.documentElement.lang = window.currentLang === 'ar' ? 'ar' : 'en';
+            document.documentElement.dir = window.currentLang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.querySelectorAll('[data-en][data-ar]').forEach(function(el) {
+                el.textContent = window.currentLang === 'ar'
+                    ? el.getAttribute('data-ar')
+                    : el.getAttribute('data-en');
+            });
+            
+            const langToggle = document.getElementById('langToggle');
+            if (langToggle) {
+                const span = langToggle.querySelector('span');
+                if (span) {
+                    span.textContent = window.currentLang === 'ar' ? 'AR' : 'EN';
+                }
+            }
+            
+            localStorage.setItem('ui_lang', window.currentLang);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // تهيئة المتغيرات
+            const grid = document.getElementById('freeStoriesGrid');
+            const visitorSpan = document.getElementById('visitorCount');
+            const freeProgressBar = document.getElementById('freeProgressBar');
+            const freeProgressText = document.getElementById('freeProgressText');
+            
+            // إحصائيات الزوار
+            async function updateVisitorCount() {
+                try {
+                    const res = await fetch('https://api.countapi.xyz/hit/deutsch-mit-rawad/visitors');
+                    const data = await res.json();
+                    if (visitorSpan) {
+                        visitorSpan.textContent = data.value.toLocaleString('de-DE');
+                    }
+                } catch (e) {
+                    console.log('Visitor count error:', e);
+                }
+            }
+            
+            // تحميل القصص
+            async function loadFreeStories() {
+                if (!grid) return;
+                
+                // عرض حالة التحميل
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 20px; color: var(--gray-400);">
+                            Lade Geschichten...
+                        </p>
+                    </div>
+                `;
+                
+                const data = await window.loadQuestionsFile('lesen1');
+                
+                if (data && Array.isArray(data)) {
+                    grid.innerHTML = '';
+                    
+                    // تحديث التقدم
+                    updateProgress(data.length);
+                    
+                    data.forEach((story, index) => {
+                        const isCompleted = localStorage.getItem(`story_free_${index}_completed`) === 'true';
+                        const icon = getStoryIcon(story.title);
+                        
+                        const card = document.createElement('div');
+                        card.className = `story-card ${isCompleted ? 'completed' : ''}`;
+                        card.setAttribute('data-index', index);
+                        
+                        card.innerHTML = `
+                            <div class="story-icon">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <h3>${story.title || 'Geschichte ' + (index + 1)}</h3>
+                            <p>
+                                <i class="fas fa-question-circle"></i>
+                                ${story.questions ? story.questions.length : 0} Fragen
+                            </p>
+                            <div class="story-footer">
+                                <span class="story-badge">
+                                    <i class="fas fa-star"></i>
+                                    Kostenlos
+                                </span>
+                                <button class="btn-start" data-index="${index}">
+                                    <span>Starten</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            ${isCompleted ? '<div class="completed-badge"><i class="fas fa-check-circle"></i></div>' : ''}
+                        `;
+                        
+                        const btn = card.querySelector('.btn-start');
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            startStory(story, index);
+                        });
+                        
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Die Geschichten konnten nicht geladen werden.
+                            <button onclick="location.reload()" class="btn-secondary" style="margin-top: 15px;">
+                                <i class="fas fa-redo"></i> Neu laden
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            // أيقونة لكل قصة
+            function getStoryIcon(title) {
+                const icons = {
+                    'Die Nachbarin': 'fa-user-friends',
+                    'Im Wald': 'fa-tree',
+                    'Handy verloren': 'fa-mobile-alt',
+                    'Das Fahrrad': 'fa-bicycle',
+                    'Steffi': 'fa-user-tie',
+                    'Japan': 'fa-flag'
+                };
+                
+                for (let key in icons) {
+                    if (title?.includes(key)) return icons[key];
+                }
+                return 'fa-book-open';
+            }
+            
+            // بدأ القصة
+            function startStory(story, index) {
+                // حفظ التقدم
+                sessionStorage.setItem('currentStory', JSON.stringify(story));
+                window.location.href = `viewer.html?file=lesen1&index=${index}`;
+            }
+            
+            // تحديث شريط التقدم
+            function updateProgress(totalStories) {
+                let completed = 0;
+                for (let i = 0; i < totalStories; i++) {
+                    if (localStorage.getItem(`story_free_${i}_completed`) === 'true') {
+                        completed++;
+                    }
+                }
+                
+                const percentage = (completed / totalStories) * 100;
+                if (freeProgressBar) {
+                    freeProgressBar.style.width = `${percentage}%`;
+                }
+                if (freeProgressText) {
+                    freeProgressText.textContent = `${completed}/${totalStories} Geschichten`;
+                }
+            }
+            
+            // تحديث التقدم عند العودة من المشاهد (باستخدام الكاش لو موجود)
+            window.addEventListener('focus', async () => {
+                const data = await window.loadQuestionsFile('lesen1');
+                if (data && Array.isArray(data)) {
+                    updateProgress(data.length);
+                }
+            });
+            
+            // Toast Nachricht
+            window.showToast = function(message, type = 'info') {
+                const toast = document.getElementById('toastNotification');
+                const toastMsg = document.getElementById('toastMessage');
+                const toastIcon = document.getElementById('toastIcon');
+                
+                if (!toast || !toastMsg) return;
+                
+                toastMsg.textContent = message;
+                toast.className = `toast-notification show ${type}`;
+                
+                if (type === 'success') toastIcon.className = 'fas fa-check-circle';
+                else if (type === 'error') toastIcon.className = 'fas fa-exclamation-circle';
+                else toastIcon.className = 'fas fa-info-circle';
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            };
+            
+            // Impressum
+            window.showImpressum = function() {
+                alert('Deutsch mit Rawad\nKontakt: @mez123794\nAlle Rechte vorbehalten.');
+            };
+            
+            // بدأ التحميل
+            await updateVisitorCount();
+            await loadFreeStories();
+            
+            // عرض ترحيب
+            setTimeout(() => {
+                showToast('👋 Willkommen bei Deutsch mit Rawad!', 'info');
+            }, 1000);
+
+            // تطبيق اللغة المحفوظة
+            applyLanguage(localStorage.getItem('ui_lang') || 'en');
+
+            const langToggle = document.getElementById('langToggle');
+            if (langToggle) {
+                langToggle.addEventListener('click', function() {
+                    const nextLang = window.currentLang === 'en' ? 'ar' : 'en';
+                    applyLanguage(nextLang);
+                });
+            }
+
+        });
+    </script>
+    
+    <style>
+        /* تنسيقات إضافية للصفحة الرئيسية */
+        .hero-badge {
+            margin-bottom: 20px;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: var(--gray-400);
+            font-size: 0.9rem;
+        }
+        
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-300);
+        }
+        
+        .free-progress {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: var(--gray-400);
+        }
+        
+        .premium-features {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .premium-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--gray-300);
+        }
+        
+        .premium-features li i {
+            color: var(--success);
+        }
+        
+        .premium-price {
+            margin: 20px 0;
+        }
+        
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .old-price {
+            text-decoration: line-through;
+            color: var(--gray-500);
+            margin-left: 10px;
+        }
+        
+        .discount {
+            background: var(--danger);
+            color: white;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .cta-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .cta-content h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            color: var(--gray-500);
+            font-size: 1.5rem;
+        }
+        
+        .payment-methods span {
+            font-size: 0.9rem;
+        }
+        
+        .features-section {
+            padding: 80px 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--transition-normal);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .feature-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+        
+        .feature-card p {
+            color: var(--gray-400);
+        }
+        .badge-free{
+        color:black !important;
+       }
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .footer-logo i {
+            color: var(--primary);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: color var(--transition-normal);
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-social a {
+            color: var(--gray-400);
+            font-size: 1.5rem;
+            transition: all var(--transition-normal);
+        }
+        
+        .footer-social a:hover {
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-copyright {
+            text-align: center;
+            color: var(--gray-600);
+        }
+        
+        .made-with {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .completed-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--success);
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark-800);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius-full);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--light);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .toast-notification.show {
+            transform: translateX(0);
+        }
+        
+        .toast-notification.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .toast-notification.error {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .toast-notification i {
+            font-size: 1.3rem;
+        }
+        
+        /* وضع الليل الافتراضي فقط */
+        body {
+            background: var(--dark-950);
+            color: var(--gray-300);
+        }
+
+        @media (max-width: 768px) {
+            .hero-stats {
+                gap: 20px;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .hero-features {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .payment-methods {
+                flex-wrap: wrap;
+            }
+            
+            .toast-notification {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+            }
+        }
+    </style>
+</body>
+</html>
