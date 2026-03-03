@@ -39,6 +39,8 @@ window.loginUser = async function(username, password) {
             })
         })
 
+
+        
         const result = await response.json()
         
         if (result.success) {
