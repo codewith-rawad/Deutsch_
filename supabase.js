@@ -2,11 +2,11 @@
 window.API_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/functions/v1'
 
 
-window.getToken = function() {
+window.getToken = function () {
     return localStorage.getItem('auth_token')
 }
 
-window.setToken = function(token) {
+window.setToken = function (token) {
     if (token) {
         localStorage.setItem('auth_token', token)
     } else {
@@ -14,7 +14,7 @@ window.setToken = function(token) {
     }
 }
 
-window.getDeviceId = function() {
+window.getDeviceId = function () {
     let deviceId = localStorage.getItem('device_id')
     if (!deviceId) {
         deviceId = 'device_' + Math.random().toString(36).substring(2) + Date.now().toString(36)
@@ -24,7 +24,7 @@ window.getDeviceId = function() {
 }
 
 
-window.loginUser = async function(username, password) {
+window.loginUser = async function (username, password) {
     try {
 
         const response = await fetch(`${window.API_URL}/login`, {
@@ -40,11 +40,11 @@ window.loginUser = async function(username, password) {
         })
 
 
-        
+
         const result = await response.json()
-        
+
         if (result.success) {
-          
+
             window.setToken(result.token)
             sessionStorage.setItem('username', username)
             sessionStorage.setItem('user_id', result.user.id)
@@ -60,32 +60,32 @@ window.loginUser = async function(username, password) {
 }
 
 
-window.checkSession = function() {
+window.checkSession = function () {
 
     return sessionStorage.getItem('logged_in') === 'true'
 }
 
 
-window.logout = function() {
+window.logout = function () {
     sessionStorage.clear()
     window.setToken(null)
     window.location.href = 'index.html'
 }
 
 
-window.getCurrentUsername = function() {
+window.getCurrentUsername = function () {
     return sessionStorage.getItem('username') || 'Gast'
 }
 
 window._questionsCache = window._questionsCache || {}
 
 
-window.loadQuestionsFile = async function(fileKey, options) {
+window.loadQuestionsFile = async function (fileKey, options) {
     const opts = options || {}
     const maxAgeMs = typeof opts.maxAgeMs === 'number' ? opts.maxAgeMs : 6 * 60 * 60 * 1000
     const forceReload = !!opts.forceReload
 
- 
+
     if (!forceReload && window._questionsCache[fileKey]) {
         return window._questionsCache[fileKey]
     }
@@ -133,13 +133,13 @@ window.loadQuestionsFile = async function(fileKey, options) {
 
         window._questionsCache[fileKey] = data
         try {
-          
+
             localStorage.setItem('questions_cache_' + fileKey, JSON.stringify({
                 ts: Date.now(),
                 data: data
             }))
         } catch (e) {
-            
+
         }
 
         return data

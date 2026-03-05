@@ -5,18 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deutsch mit Rawad · Premium Übung</title>
-    
-  
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <style>
-        
         * {
             margin: 0;
             padding: 0;
@@ -24,7 +25,7 @@
         }
 
         :root {
-           
+
             --primary: #8b5cf6;
             --primary-light: #a78bfa;
             --primary-dark: #7c3aed;
@@ -38,8 +39,8 @@
             --danger-light: #f87171;
             --warning: #f59e0b;
             --gold: #fbbf24;
-            
-  
+
+
             --dark-950: #020617;
             --dark-900: #0f172a;
             --dark-800: #1e293b;
@@ -47,27 +48,27 @@
             --gray-400: #94a3b8;
             --gray-300: #cbd5e1;
             --light: #f8fafc;
-            
-      
+
+
             --purple-glow: rgba(139, 92, 246, 0.3);
             --orange-glow: rgba(249, 115, 22, 0.3);
             --blue-glow: rgba(6, 182, 212, 0.3);
-            
-            --shadow-lg: 0 20px 25px rgba(0,0,0,0.5);
-            --shadow-xl: 0 30px 40px rgba(0,0,0,0.6);
-            --shadow-2xl: 0 40px 60px rgba(0,0,0,0.7);
+
+            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 30px 40px rgba(0, 0, 0, 0.6);
+            --shadow-2xl: 0 40px 60px rgba(0, 0, 0, 0.7);
             --shadow-glow: 0 0 30px var(--purple-glow);
             --shadow-glow-strong: 0 0 50px var(--purple-glow);
-        
+
             --radius-lg: 24px;
             --radius-xl: 32px;
             --radius-2xl: 40px;
             --radius-full: 9999px;
-            
-       
+
+
             --font-display: 'Outfit', sans-serif;
             --font-body: 'Space Grotesk', sans-serif;
-            
+
             /* animations */
             --transition-normal: 0.3s ease;
             --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -91,7 +92,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
@@ -101,8 +102,15 @@
         }
 
         @keyframes gradientShift {
-            0% { opacity: 0.5; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.2); }
+            0% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
         }
 
         .container {
@@ -173,9 +181,17 @@
         }
 
         @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0); }
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
         }
 
         .logo span {
@@ -187,9 +203,17 @@
         }
 
         @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* ========== Loading Spinner ========== */
@@ -212,7 +236,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(720deg); }
+            to {
+                transform: rotate(720deg);
+            }
         }
 
         /* ========== Error & Premium Lock ========== */
@@ -297,8 +323,13 @@
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
         }
 
         /* ========== Viewer Content ========== */
@@ -326,8 +357,13 @@
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         h1 {
@@ -653,7 +689,7 @@
             flex-wrap: wrap;
         }
 
-        .stats-summary > div {
+        .stats-summary>div {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -847,7 +883,8 @@
         }
 
         /* ========== Question Cards ========== */
-        .questions-container, .questions-area {
+        .questions-container,
+        .questions-area {
             display: flex;
             flex-direction: column;
             gap: 1.8rem;
@@ -856,7 +893,8 @@
             z-index: 1;
         }
 
-        .question-card, .question-block {
+        .question-card,
+        .question-block {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -867,7 +905,8 @@
             overflow: hidden;
         }
 
-        .question-card::before, .question-block::before {
+        .question-card::before,
+        .question-block::before {
             content: attr(data-num);
             position: absolute;
             top: 20px;
@@ -910,7 +949,11 @@
             z-index: 1;
         }
 
-        .option-r, .option-f, .option-mc, .option-ja-nein, .option-horen4 {
+        .option-r,
+        .option-f,
+        .option-mc,
+        .option-ja-nein,
+        .option-horen4 {
             padding: 18px 25px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             background: rgba(255, 255, 255, 0.02);
@@ -926,7 +969,11 @@
             backdrop-filter: blur(5px);
         }
 
-        .option-r::before, .option-f::before, .option-mc::before, .option-ja-nein::before, .option-horen4::before {
+        .option-r::before,
+        .option-f::before,
+        .option-mc::before,
+        .option-ja-nein::before,
+        .option-horen4::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -939,7 +986,11 @@
             transition: width 0.6s, height 0.6s;
         }
 
-        .option-r:hover::before, .option-f:hover::before, .option-mc:hover::before, .option-ja-nein:hover::before, .option-horen4:hover::before {
+        .option-r:hover::before,
+        .option-f:hover::before,
+        .option-mc:hover::before,
+        .option-ja-nein:hover::before,
+        .option-horen4:hover::before {
             width: 300px;
             height: 300px;
         }
@@ -1004,7 +1055,11 @@
             box-shadow: 0 10px 30px var(--orange-glow);
         }
 
-        .option-r.correct, .option-f.correct, .option-mc.correct, .option-ja-nein.correct, .option-horen4.correct {
+        .option-r.correct,
+        .option-f.correct,
+        .option-mc.correct,
+        .option-ja-nein.correct,
+        .option-horen4.correct {
             background: linear-gradient(135deg, var(--success), var(--success-dark));
             border-color: var(--success-light);
             color: white;
@@ -1012,7 +1067,11 @@
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
         }
 
-        .option-r.wrong, .option-f.wrong, .option-mc.wrong, .option-ja-nein.wrong, .option-horen4.wrong {
+        .option-r.wrong,
+        .option-f.wrong,
+        .option-mc.wrong,
+        .option-ja-nein.wrong,
+        .option-horen4.wrong {
             background: linear-gradient(135deg, var(--danger), var(--danger-dark));
             border-color: var(--danger-light);
             color: white;
@@ -1020,7 +1079,11 @@
             box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
         }
 
-        .option-r:disabled, .option-f:disabled, .option-mc:disabled, .option-ja-nein:disabled, .option-horen4:disabled {
+        .option-r:disabled,
+        .option-f:disabled,
+        .option-mc:disabled,
+        .option-ja-nein:disabled,
+        .option-horen4:disabled {
             opacity: 0.8;
             cursor: not-allowed;
         }
@@ -1042,6 +1105,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1241,9 +1305,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .total-points {
@@ -1335,7 +1407,8 @@
             flex-wrap: wrap;
         }
 
-        .btn-primary, .btn-secondary {
+        .btn-primary,
+        .btn-secondary {
             padding: 15px 30px;
             border-radius: var(--radius-full);
             text-decoration: none;
@@ -1447,8 +1520,8 @@
             .stats-summary {
                 flex-direction: column;
             }
-            
-            .stats-summary > div {
+
+            .stats-summary>div {
                 width: 100%;
             }
         }
@@ -1466,11 +1539,13 @@
                 grid-template-columns: 1fr;
             }
 
-            .question-card, .question-block {
+            .question-card,
+            .question-block {
                 padding: 25px;
             }
 
-            .question-card::before, .question-block::before {
+            .question-card::before,
+            .question-block::before {
                 top: 15px;
                 right: 15px;
                 width: 35px;
@@ -1538,7 +1613,8 @@
                 font-size: 0.9rem;
             }
 
-            .question-card, .question-block {
+            .question-card,
+            .question-block {
                 padding: 20px;
             }
 
@@ -1546,7 +1622,8 @@
                 flex-direction: column;
             }
 
-            .btn-primary, .btn-secondary {
+            .btn-primary,
+            .btn-secondary {
                 width: 100%;
                 justify-content: center;
             }
@@ -1568,11 +1645,11 @@
         <div class="container">
             <div class="nav-content">
                 <a href="javascript:history.back()" class="back-link">
-                    <i class="fas fa-arrow-left"></i> 
+                    <i class="fas fa-chevron-left"></i>
                     Zurück
                 </a>
                 <div class="logo">
-                    <i class="fas fa-gem"></i>
+                    <i class="fas fa-graduation-cap" style="color: var(--primary);"></i>
                     <span>Deutsch mit Rawad</span>
                 </div>
                 <div></div>
@@ -1686,7 +1763,7 @@
                 let difficulty = 1;
                 if (section.questions && section.questions.length > 10) difficulty = 3;
                 else if (section.questions && section.questions.length > 5) difficulty = 2;
-                
+
                 let stars = '';
                 for (let i = 0; i < 3; i++) {
                     if (i < difficulty) {
@@ -1744,7 +1821,7 @@
                 if (Array.isArray(data) && data.length > 0) {
                     const first = data[0];
                     const firstQ = first.questions && first.questions[0];
-                    
+
                     // للقصص التي تحتوي على texts (مثل lesen1)
                     if (firstQ && firstQ.texts) {
                         if (storyIndex !== null && storyIndex !== '' && data[parseInt(storyIndex, 10)] !== undefined) {
@@ -1754,7 +1831,7 @@
                         }
                         return;
                     }
-                    
+
                     // للقصص المتقدمة (مثل lesen5)
                     if (firstQ && (firstQ.correct_answers || firstQ.question)) {
                         if (storyIndex !== null && storyIndex !== '' && data[parseInt(storyIndex, 10)] !== undefined) {
@@ -1765,52 +1842,52 @@
                         return;
                     }
                 }
-                
+
                 // التحقق من وجود sections
                 if (data.sections && data.sections.length > 0) {
                     const secIdx = sectionIndexParam !== null && sectionIndexParam !== '' ? parseInt(sectionIndexParam, 10) : null;
-                    
+
                     // إذا لم يتم تحديد section أو الـ index غير صالح، اعرض قائمة الأقسام
                     const showSectionList = (secIdx === null || isNaN(secIdx) || secIdx < 0 || secIdx >= data.sections.length);
-                    
+
                     if (showSectionList) {
                         // عرض القائمة الرئيسية بشكل أنيق
                         displaySectionList(data, fileKey);
                         return;
                     }
-                    
+
                     // تم تحديد section محدد - اعرض محتواه
                     const selectedSection = data.sections[secIdx];
                     const oneSection = [selectedSection];
                     const dataOne = { name: data.name, sections: oneSection };
-                    
+
                     // التحقق من نوع المحتوى
                     if (selectedSection.ads && selectedSection.solution) {
                         displayLesen3(dataOne, secIdx);
                         return;
                     }
-                    
+
                     if (selectedSection.persons && selectedSection.persons[0] && (selectedSection.persons[0].answer === 'JA' || selectedSection.persons[0].answer === 'NEIN')) {
                         displayLesen4(dataOne, fileKey, secIdx);
                         return;
                     }
-                    
+
                     if (selectedSection.persons && selectedSection.persons[0] && selectedSection.persons[0].person_type && !selectedSection.questions && !selectedSection.statements) {
                         displayHoren4Section(selectedSection, data.name, fileKey, secIdx);
                         return;
                     }
-                    
+
                     // عرض الأقسام العادية
                     displaySections(dataOne, fileKey, secIdx);
                     return;
                 }
-                
+
                 // التحقق من وجود persons مباشرة
                 if (data.persons) {
                     displayPersonsStatements(data);
                     return;
                 }
-                
+
                 contentDiv.innerHTML = '<p class="error-message">Unbekanntes Datenformat.</p>';
             }
 
@@ -1818,12 +1895,12 @@
             function displaySectionList(data, fileKey) {
                 const backUrl = 'dashboard.html';
                 const isHoren = fileKey && (fileKey.startsWith('horen') || (data.name && data.name.toLowerCase().includes('hörverstehen')));
-                
+
                 // تحديد الأيقونة واللون حسب نوع الملف
                 let sectionIcon = 'fa-layer-group';
                 let sectionColor = 'var(--primary)';
                 let sectionTitle = data.name || 'Übungen';
-                
+
                 if (fileKey === 'lesen2') {
                     sectionIcon = 'fa-question-circle';
                     sectionColor = 'var(--secondary)';
@@ -1845,7 +1922,7 @@
                     sectionColor = 'var(--secondary)';
                     sectionTitle = 'Hörverstehen';
                 }
-                
+
                 // بداية الـ HTML
                 let html = `
                     <div class="story-viewer">
@@ -1879,12 +1956,12 @@
                         
                         <div class="teil-grid">
                 `;
-                
+
                 // إنشاء بطاقة لكل Teil
                 data.sections.forEach((section, idx) => {
                     let count = 0;
                     let sectionType = '';
-                    
+
                     // حساب عدد المهام حسب نوع القسم
                     if (section.questions) {
                         count = section.questions.length;
@@ -1901,17 +1978,17 @@
                             sectionType = 'Personen';
                         }
                     }
-                    
+
                     if (!count) count = '?';
-                    
+
                     // أيقونة مختلفة لكل Teil
                     const teilIcons = ['fa-1', 'fa-2', 'fa-3', 'fa-4', 'fa-5', 'fa-6'];
                     const teilIcon = teilIcons[idx] || 'fa-circle';
-                    
+
                     // لون مختلف لكل Teil
                     const teilColors = ['var(--primary)', 'var(--secondary)', 'var(--accent)', 'var(--success)', 'var(--gold)', 'var(--danger)'];
                     const teilColor = teilColors[idx % teilColors.length];
-                    
+
                     // عنوان Teil
                     let teilTitle = '';
                     if (isHoren) {
@@ -1919,10 +1996,10 @@
                     } else {
                         teilTitle = section.section_title || section.title || `Teil ${idx + 1}`;
                     }
-                    
+
                     // عنوان فرعي
                     const teilSubtitle = section.subtitle || section.theme || section.topic || '';
-                    
+
                     html += `
                         <a href="viewer.html?file=${encodeURIComponent(fileKey)}&section=${idx}" class="teil-card" style="border-top: 4px solid ${teilColor};">
                             <div class="teil-card-header">
@@ -1957,7 +2034,7 @@
                         </a>
                     `;
                 });
-                
+
                 html += `
                         </div>
                         
@@ -1971,7 +2048,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 contentDiv.innerHTML = html;
             }
 
@@ -1986,11 +2063,11 @@
                         </p>
                         <div class="stories-grid">
                 `;
-                
+
                 stories.forEach((story, idx) => {
                     const storyIcon = getStoryIcon(story.title);
                     const questionCount = story.questions ? story.questions.length : 0;
-                    
+
                     html += `
                         <div class="story-card" onclick="window.location.href='viewer.html?file=${fileKey}&index=${idx}'">
                             <div class="story-icon">
@@ -2014,7 +2091,7 @@
                         </div>
                     `;
                 });
-                
+
                 html += `
                         </div>
                         <div class="result-actions" style="margin-top: 40px;">
@@ -2024,9 +2101,9 @@
                         </div>
                     </div>
                 `;
-                
+
                 contentDiv.innerHTML = html;
-                
+
                 // إضافة event listeners للأزرار
                 document.querySelectorAll('.story-card .btn-start').forEach((btn, idx) => {
                     btn.addEventListener('click', (e) => {
@@ -2046,12 +2123,12 @@
                         </p>
                         <div class="stories-grid">
                 `;
-                
+
                 stories.forEach((story, idx) => {
                     const storyIcon = getStoryIcon(story.title);
                     const questionCount = story.questions ? story.questions.length : 0;
                     const isPremium = fileKey !== 'lesen1';
-                    
+
                     html += `
                         <div class="story-card ${isPremium ? 'premium-card' : ''}" 
                              onclick="window.location.href='viewer.html?file=${fileKey}&index=${idx}'">
@@ -2077,7 +2154,7 @@
                         </div>
                     `;
                 });
-                
+
                 html += `
                         </div>
                         <div class="result-actions" style="margin-top: 40px;">
@@ -2087,9 +2164,9 @@
                         </div>
                     </div>
                 `;
-                
+
                 contentDiv.innerHTML = html;
-                
+
                 document.querySelectorAll('.story-card .btn-start').forEach((btn, idx) => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -2124,7 +2201,7 @@
                     'Schweiz': 'fa-flag',
                     'Deutschland': 'fa-flag'
                 };
-                
+
                 for (let key in icons) {
                     if (title?.toLowerCase().includes(key.toLowerCase())) return icons[key];
                 }
