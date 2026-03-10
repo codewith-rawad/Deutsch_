@@ -74,9 +74,9 @@ const toastNotification = document.getElementById('toastNotification')
 const toastMessage = document.getElementById('toastMessage')
 
 // التحقق من الجلسة عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     console.log('DOM geladen')
-    
+
     // التحقق من وجود window.checkSession
     if (typeof window.checkSession === 'function' && window.checkSession()) {
         console.log('Session gefunden, starte App...')
@@ -93,13 +93,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 function showLoginScreen() {
     if (loginScreen) loginScreen.style.display = 'flex'
     if (homePage) homePage.style.display = 'none'
-    
+
     if (loginButton) {
         loginButton.addEventListener('click', handleLogin)
     }
-    
+
     if (loginPassword) {
-        loginPassword.addEventListener('keypress', function(e) {
+        loginPassword.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') handleLogin()
         })
     }
@@ -107,27 +107,27 @@ function showLoginScreen() {
 
 async function handleLogin() {
     if (!loginUsername || !loginPassword) return
-    
+
     const username = loginUsername.value.trim()
     const password = loginPassword.value.trim()
-    
+
     if (!username || !password) {
         showLoginError('الرجاء إدخال اسم المستخدم وكلمة السر')
         return
     }
-    
+
     if (loginButton) {
         loginButton.disabled = true
         loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...'
     }
-    
+
     if (typeof window.loginUser !== 'function') {
         showLoginError('خطأ في تحميل النظام')
         return
     }
-    
+
     const result = await window.loginUser(username, password)
-    
+
     if (result.success) {
         await initializeApp()
         if (loginScreen) loginScreen.style.display = 'none'
@@ -147,7 +147,7 @@ function showLoginError(message) {
     if (!loginErrorMessage) return
     loginErrorMessage.textContent = message
     loginErrorMessage.style.display = 'block'
-    setTimeout(function() {
+    setTimeout(function () {
         loginErrorMessage.style.display = 'none'
     }, 3000)
 }
@@ -156,8 +156,8 @@ function showLoginError(message) {
 async function initializeApp() {
     await loadStories()
     updateVisitorCount()
-    
-    setTimeout(function() {
+
+    setTimeout(function () {
         showToast('👋 Willkommen bei Deutsch mit Rawad!', 'info')
     }, 1000)
 }
@@ -189,13 +189,13 @@ async function loadStories() {
         if (typeof window.fetchQuestions !== 'function') {
             throw new Error('fetchQuestions nicht verfügbar')
         }
-        
+
         storiesData = await window.fetchQuestions()
-        
+
         if (!storiesData || storiesData.length === 0) {
             throw new Error('لا توجد قصص متاحة')
         }
-        
+
         hideLoading()
         displayLesenStories()
         updateStats()
@@ -208,10 +208,10 @@ async function loadStories() {
 
 function showLoading() {
     if (!lesenStoriesGrid) return
-    
+
     const existingSpinner = document.getElementById('loadingSpinner')
     if (existingSpinner) existingSpinner.remove()
-    
+
     const loadingDiv = document.createElement('div')
     loadingDiv.className = 'loading'
     loadingDiv.id = 'loadingSpinner'
@@ -228,10 +228,10 @@ function hideLoading() {
 
 function showError(message) {
     if (!lesenStoriesGrid) return
-    
+
     const existingError = document.querySelector('.error-message')
     if (existingError) existingError.remove()
-    
+
     const errorDiv = document.createElement('div')
     errorDiv.className = 'error-message'
     errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`
@@ -242,7 +242,7 @@ function showToast(message, type = 'info') {
     if (!toastMessage || !toastNotification) return
     toastMessage.textContent = message
     toastNotification.className = `toast-notification show ${type}`
-    setTimeout(function() {
+    setTimeout(function () {
         toastNotification.classList.remove('show')
     }, 3000)
 }
@@ -250,35 +250,35 @@ function showToast(message, type = 'info') {
 function loadSavedProgress() {
     completedStories = 0
     if (storiesData && storiesData.length > 0) {
-        storiesData.forEach(function(_, index) {
+        storiesData.forEach(function (_, index) {
             if (localStorage.getItem(`story_${index}_completed`) === 'true') {
                 completedStories++
             }
         })
     }
-    
+
     totalScore = parseInt(localStorage.getItem('totalScore')) || 0
     streakCount = parseInt(localStorage.getItem('streakCount')) || 0
-    
+
     updateStats()
 }
 
 function updateStats() {
     if (!storiesData) return
-    
+
     const totalStories = storiesData.length || 1
     const progressPercentage = (completedStories / totalStories) * 100
     if (progressBar) {
         progressBar.style.width = `${progressPercentage}%`
     }
-    
+
     localStorage.setItem('totalScore', totalScore)
     localStorage.setItem('streakCount', streakCount)
 }
 
 function getIconForStory(story) {
     if (!story || !story.title) return 'fa-book-open'
-    
+
     const title = story.title.toLowerCase()
     if (title.includes('nachbarin')) return 'fa-people-arrows'
     if (title.includes('wald')) return 'fa-tree'
@@ -299,15 +299,15 @@ function getIconForStory(story) {
 function displayLesenStories() {
     if (!lesenStoriesGrid || !storiesData) return
     lesenStoriesGrid.innerHTML = ''
-    
-    storiesData.forEach(function(story, index) {
+
+    storiesData.forEach(function (story, index) {
         const storyCard = document.createElement('div')
         storyCard.className = 'story-card'
         storyCard.setAttribute('data-index', index)
-        
+
         const iconClass = getIconForStory(story)
         const isCompleted = localStorage.getItem(`story_${index}_completed`) === 'true'
-        
+
         storyCard.innerHTML = `
             <i class="fas ${iconClass} story-icon"></i>
             <h3>${story.title || 'Kein Titel'}</h3>
@@ -317,8 +317,8 @@ function displayLesenStories() {
                 <span class="story-status ${isCompleted ? 'completed' : ''}"></span>
             </div>
         `
-        
-        storyCard.addEventListener('click', function() {
+
+        storyCard.addEventListener('click', function () {
             selectStory(story, 'Lesen', index)
         })
         lesenStoriesGrid.appendChild(storyCard)
@@ -330,53 +330,53 @@ function selectStory(story, category, index) {
     currentCategory = category
     currentQuestionIndex = 0
     userAnswers = []
-    
+
     score = {
         total: story.questions ? story.questions.length : 0,
         correct: 0,
         wrong: 0
     }
-    
+
     if (currentStoryTitle) currentStoryTitle.textContent = story.title || ''
     if (currentCategoryBadge) currentCategoryBadge.innerHTML = `<i class="fas fa-book-open"></i> Lesen · Premium`
     if (totalQuestions) totalQuestions.textContent = story.questions ? story.questions.length : 0
-    
+
     displaySummary(story)
-    
+
     if (heroSection) heroSection.style.display = 'none'
     if (lesenSection) lesenSection.style.display = 'none'
     if (hörenSection) hörenSection.style.display = 'none'
     if (resultsSection) resultsSection.style.display = 'none'
     if (questionsSection) questionsSection.style.display = 'block'
-    
+
     displayQuestion()
 }
 
 function displaySummary(story) {
     if (!summarySection || !summaryContent) return
-    
+
     const hasSummary = story.summary_ar || story.summary_de
     if (!hasSummary) {
         summarySection.style.display = 'none'
         return
     }
-    
+
     summarySection.style.display = 'block'
-    
-    document.querySelectorAll('.summary-lang-btn').forEach(function(btn) {
+
+    document.querySelectorAll('.summary-lang-btn').forEach(function (btn) {
         btn.classList.toggle('active', btn.dataset.lang === currentSummaryLang)
     })
-    
-    const text = currentSummaryLang === 'ar' 
-        ? (story.summary_ar || story.summary_de || '') 
+
+    const text = currentSummaryLang === 'ar'
+        ? (story.summary_ar || story.summary_de || '')
         : (story.summary_de || story.summary_ar || '')
-    
+
     summaryContent.textContent = text
     summaryContent.dir = currentSummaryLang === 'ar' ? 'rtl' : 'ltr'
 }
 
-document.querySelectorAll('.summary-lang-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
+document.querySelectorAll('.summary-lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
         currentSummaryLang = this.dataset.lang
         if (currentStory) displaySummary(currentStory)
     })
@@ -384,19 +384,19 @@ document.querySelectorAll('.summary-lang-btn').forEach(function(btn) {
 
 function displayQuestion() {
     if (!currentStory || !currentStory.questions) return
-    
+
     const question = currentStory.questions[currentQuestionIndex]
     if (!question) return
-    
+
     const randomText = question.texts[Math.floor(Math.random() * question.texts.length)]
-    
+
     if (questionTextContainer) {
         questionTextContainer.innerHTML = `<p class="question-text">"${randomText}"</p>`
     }
     if (currentQuestionNumber) {
         currentQuestionNumber.textContent = currentQuestionIndex + 1
     }
-    
+
     if (optionR && optionF) {
         optionR.classList.remove('selected-r')
         optionF.classList.remove('selected-f')
@@ -405,7 +405,7 @@ function displayQuestion() {
     }
     if (nextBtn) nextBtn.disabled = true
     if (feedbackContainer) feedbackContainer.style.display = 'none'
-    
+
     updateProgress()
 }
 
@@ -417,23 +417,23 @@ function updateProgress() {
 
 function checkAnswer(selectedAnswer) {
     if (!currentStory || !currentStory.questions) return
-    
+
     const question = currentStory.questions[currentQuestionIndex]
     const isCorrect = selectedAnswer === question.answer
-    
+
     if (optionR && optionF) {
         optionR.disabled = true
         optionF.disabled = true
     }
-    
+
     if (selectedAnswer === 'R' && optionR) {
         optionR.classList.add('selected-r')
     } else if (optionF) {
         optionF.classList.add('selected-f')
     }
-    
+
     if (feedbackContainer) feedbackContainer.style.display = 'flex'
-    
+
     if (isCorrect) {
         if (feedbackContainer) feedbackContainer.className = 'feedback-container correct'
         if (feedbackIcon) feedbackIcon.innerHTML = '<i class="fas fa-check-circle"></i>'
@@ -452,13 +452,13 @@ function checkAnswer(selectedAnswer) {
         }
         score.wrong++
     }
-    
+
     userAnswers.push({
         question: question,
         selected: selectedAnswer,
         correct: isCorrect
     })
-    
+
     updateStats()
     if (nextBtn) nextBtn.disabled = false
 }
@@ -475,35 +475,35 @@ function nextQuestion() {
 
 function finishStory() {
     if (!currentStory || !storiesData) return
-    
-    const storyIndex = storiesData.findIndex(function(s) {
+
+    const storyIndex = storiesData.findIndex(function (s) {
         return s.title === currentStory.title
     })
-    
+
     if (storyIndex !== -1) {
         localStorage.setItem(`story_${storyIndex}_completed`, 'true')
     }
-    
+
     completedStories++
-    
+
     const today = new Date().toDateString()
     const lastActive = localStorage.getItem('lastActive')
-    
+
     if (lastActive === new Date(Date.now() - 86400000).toDateString()) {
         streakCount++
     } else if (lastActive !== today) {
         streakCount = 1
     }
     localStorage.setItem('lastActive', today)
-    
+
     const percentage = (score.correct / score.total) * 100
     const isPassed = percentage >= 60
-    
+
     if (statusBadge) {
         statusBadge.textContent = isPassed ? 'ناجح ✓' : 'راسب ✗'
         statusBadge.className = 'status-badge ' + (isPassed ? 'status-pass' : 'status-fail')
     }
-    
+
     if (percentage === 100) {
         if (resultsSubtitle) resultsSubtitle.textContent = 'Perfekt! Alle Antworten richtig! 🏆'
         showToast('🎉 Fantastisch! 100% richtig!', 'success')
@@ -514,16 +514,16 @@ function finishStory() {
     } else {
         if (resultsSubtitle) resultsSubtitle.textContent = 'Übung macht den Meister! Versuch es nochmal! 💪'
     }
-    
+
     if (finalScore) finalScore.textContent = score.correct
     if (finalTotal) finalTotal.textContent = score.total
     if (correctCount) correctCount.textContent = score.correct
     if (wrongCount) wrongCount.textContent = score.wrong
     if (pointsEarned) pointsEarned.textContent = score.correct * 10
-    
+
     if (questionsSection) questionsSection.style.display = 'none'
     if (resultsSection) resultsSection.style.display = 'block'
-    
+
     if (progressBar) progressBar.style.width = '100%'
     updateStats()
 }
@@ -534,7 +534,7 @@ function backToStories() {
     if (hörenSection) hörenSection.style.display = 'none'
     if (questionsSection) questionsSection.style.display = 'none'
     if (resultsSection) resultsSection.style.display = 'none'
-    
+
     if (progressBar) progressBar.style.width = '0%'
 }
 
@@ -547,17 +547,17 @@ function tryAgain() {
             correct: 0,
             wrong: 0
         }
-        
+
         if (resultsSection) resultsSection.style.display = 'none'
         if (questionsSection) questionsSection.style.display = 'block'
-        
+
         displayQuestion()
     }
 }
 
 // Event Listener - التحقق من وجود العناصر قبل إضافة الأحداث
 if (startLesenBtn) {
-    startLesenBtn.addEventListener('click', function() {
+    startLesenBtn.addEventListener('click', function () {
         if (heroSection) heroSection.style.display = 'none'
         if (lesenSection) lesenSection.style.display = 'block'
         currentCategory = 'lesen'
@@ -565,7 +565,7 @@ if (startLesenBtn) {
 }
 
 if (startHörenBtn) {
-    startHörenBtn.addEventListener('click', function() {
+    startHörenBtn.addEventListener('click', function () {
         if (heroSection) heroSection.style.display = 'none'
         if (hörenSection) hörenSection.style.display = 'block'
         currentCategory = 'hören'
@@ -574,14 +574,14 @@ if (startHörenBtn) {
 }
 
 if (backToHomeFromLesen) {
-    backToHomeFromLesen.addEventListener('click', function() {
+    backToHomeFromLesen.addEventListener('click', function () {
         if (heroSection) heroSection.style.display = 'block'
         if (lesenSection) lesenSection.style.display = 'none'
     })
 }
 
 if (backToHomeFromHören) {
-    backToHomeFromHören.addEventListener('click', function() {
+    backToHomeFromHören.addEventListener('click', function () {
         if (heroSection) heroSection.style.display = 'block'
         if (hörenSection) hörenSection.style.display = 'none'
     })
@@ -600,13 +600,13 @@ if (tryAgainBtn) {
 }
 
 if (optionR) {
-    optionR.addEventListener('click', function() {
+    optionR.addEventListener('click', function () {
         checkAnswer('R')
     })
 }
 
 if (optionF) {
-    optionF.addEventListener('click', function() {
+    optionF.addEventListener('click', function () {
         checkAnswer('F')
     })
 }
@@ -616,7 +616,7 @@ if (nextBtn) {
 }
 
 // Keyboard Support
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (questionsSection && questionsSection.style.display === 'block') {
         if (e.key.toLowerCase() === 'r' && optionR && !optionR.disabled) {
             checkAnswer('R')
@@ -629,8 +629,8 @@ document.addEventListener('keydown', function(e) {
 })
 
 // Teil-Indikatoren
-document.querySelectorAll('.teil').forEach(function(teil, index) {
-    teil.addEventListener('click', function() {
+document.querySelectorAll('.teil').forEach(function (teil, index) {
+    teil.addEventListener('click', function () {
         if (!this.classList.contains('active')) {
             showToast(`Teil ${index + 1} kommt bald! 🚀`, 'info')
         }
