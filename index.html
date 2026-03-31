@@ -574,44 +574,57 @@
                     // تحديث التقدم
                     updateProgress(data.length);
 
-                    data.forEach((story, index) => {
-                        const isCompleted = localStorage.getItem(`story_free_${index}_completed`) === 'true';
-                        const icon = getStoryIcon(story.title);
+                    let cursor = 0;
+                    const chunkSize = 4;
+                    const appendChunk = () => {
+                        const frag = document.createDocumentFragment();
+                        const end = Math.min(cursor + chunkSize, data.length);
+                        for (let index = cursor; index < end; index++) {
+                            const story = data[index];
+                            const isCompleted = localStorage.getItem(`story_free_${index}_completed`) === 'true';
+                            const icon = getStoryIcon(story.title);
 
-                        const card = document.createElement('div');
-                        card.className = `story-card ${isCompleted ? 'completed' : ''}`;
-                        card.setAttribute('data-index', index);
+                            const card = document.createElement('div');
+                            card.className = `story-card ${isCompleted ? 'completed' : ''}`;
+                            card.setAttribute('data-index', index);
 
-                        card.innerHTML = `
-                            <div class="story-icon">
-                                <i class="fas ${icon}"></i>
-                            </div>
-                            <h3>${story.title || 'Geschichte ' + (index + 1)}</h3>
-                            <p>
-                                <i class="fas fa-question-circle"></i>
-                                ${story.questions ? story.questions.length : 0} Fragen
-                            </p>
-                            <div class="story-footer">
-                                <span class="story-badge">
-                                    <i class="fas fa-star"></i>
-                                    Kostenlos
-                                </span>
-                                <button class="btn-start" data-index="${index}">
-                                    <span>Starten</span>
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                            ${isCompleted ? '<div class="completed-badge"><i class="fas fa-check-circle"></i></div>' : ''}
-                        `;
+                            card.innerHTML = `
+                                <div class="story-icon">
+                                    <i class="fas ${icon}"></i>
+                                </div>
+                                <h3>${story.title || 'Geschichte ' + (index + 1)}</h3>
+                                <p>
+                                    <i class="fas fa-question-circle"></i>
+                                    ${story.questions ? story.questions.length : 0} Fragen
+                                </p>
+                                <div class="story-footer">
+                                    <span class="story-badge">
+                                        <i class="fas fa-star"></i>
+                                        Kostenlos
+                                    </span>
+                                    <button class="btn-start" data-index="${index}">
+                                        <span>Starten</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                                ${isCompleted ? '<div class="completed-badge"><i class="fas fa-check-circle"></i></div>' : ''}
+                            `;
 
-                        const btn = card.querySelector('.btn-start');
-                        btn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            startStory(story, index);
-                        });
+                            const btn = card.querySelector('.btn-start');
+                            if (btn) {
+                                btn.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    startStory(story, index);
+                                });
+                            }
 
-                        grid.appendChild(card);
-                    });
+                            frag.appendChild(card);
+                        }
+                        grid.appendChild(frag);
+                        cursor = end;
+                        if (cursor < data.length) requestAnimationFrame(appendChunk);
+                    };
+                    requestAnimationFrame(appendChunk);
                 } else {
                     grid.innerHTML = `
                         <div class="error-message">

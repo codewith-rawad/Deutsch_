@@ -99,12 +99,15 @@ window.getCurrentUsername = function () {
 }
 
 window._questionsCache = window._questionsCache || {}
+window._questionsInFlight = window._questionsInFlight || {}
 
 
 window.loadQuestionsFile = async function (fileKey, options) {
     const opts = options || {}
     const maxAgeMs = typeof opts.maxAgeMs === 'number' ? opts.maxAgeMs : 6 * 60 * 60 * 1000
     const forceReload = !!opts.forceReload
+    const allowStale = opts.allowStale !== false
+    const revalidate = opts.revalidate !== false
     const hasArabicTexts = function (payload) {
         if (!Array.isArray(payload)) return false
         return payload.some(story =>
@@ -115,22 +118,83 @@ window.loadQuestionsFile = async function (fileKey, options) {
             )
         )
     }
+    const isValidData = function (payload) {
+        return fileKey !== 'lesen1' || hasArabicTexts(payload)
+    }
+    const cacheKey = 'questions_cache_' + fileKey
+
+    const fetchFromServer = async function () {
+        if (window._questionsInFlight[fileKey]) {
+            return window._questionsInFlight[fileKey]
+        }
+        window._questionsInFlight[fileKey] = (async function () {
+            const token = window.getToken()
+            const response = await fetch(`${window.API_URL}/get-file`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    fileKey: fileKey,
+                    token: token
+                })
+            })
+
+            const data = await response.json()
+            if (data.error) {
+                if (data.error === 'login_required') {
+                    window.location.href = 'login.html'
+                    return null
+                }
+                console.error('Error loading file:', data.error)
+                return null
+            }
+            if (!isValidData(data)) {
+                return null
+            }
+
+            window._questionsCache[fileKey] = data
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    ts: Date.now(),
+                    data: data
+                }))
+            } catch (e) {
+            }
+            return data
+        })()
+
+        try {
+            return await window._questionsInFlight[fileKey]
+        } finally {
+            delete window._questionsInFlight[fileKey]
+        }
+    }
 
 
     if (!forceReload && window._questionsCache[fileKey]) {
-        if (fileKey !== 'lesen1' || hasArabicTexts(window._questionsCache[fileKey])) {
+        if (isValidData(window._questionsCache[fileKey])) {
             return window._questionsCache[fileKey]
         }
     }
 
-    if (!forceReload && maxAgeMs > 0) {
+    if (!forceReload) {
         try {
-            const cachedRaw = localStorage.getItem('questions_cache_' + fileKey)
+            const cachedRaw = localStorage.getItem(cacheKey)
             if (cachedRaw) {
                 const cached = JSON.parse(cachedRaw)
-                if (cached && typeof cached.ts === 'number' && Date.now() - cached.ts < maxAgeMs && cached.data) {
-                    if (fileKey !== 'lesen1' || hasArabicTexts(cached.data)) {
-                        window._questionsCache[fileKey] = cached.data
+                if (cached && typeof cached.ts === 'number' && cached.data && isValidData(cached.data)) {
+                    const age = Date.now() - cached.ts
+                    window._questionsCache[fileKey] = cached.data
+
+                    if (age < maxAgeMs) {
+                        if (revalidate) {
+                            fetchFromServer().catch(() => { })
+                        }
+                        return cached.data
+                    }
+                    if (allowStale) {
+                        fetchFromServer().catch(() => { })
                         return cached.data
                     }
                 }
@@ -141,43 +205,7 @@ window.loadQuestionsFile = async function (fileKey, options) {
     }
 
     try {
-        const token = window.getToken()
-
-        const response = await fetch(`${window.API_URL}/get-file`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                fileKey: fileKey,
-                token: token
-            })
-        })
-
-        const data = await response.json()
-
-        if (data.error) {
-            if (data.error === 'login_required') {
-                window.location.href = 'login.html'
-                return null
-            }
-            console.error('Error loading file:', data.error)
-            return null
-        }
-
-
-        window._questionsCache[fileKey] = data
-        try {
-
-            localStorage.setItem('questions_cache_' + fileKey, JSON.stringify({
-                ts: Date.now(),
-                data: data
-            }))
-        } catch (e) {
-
-        }
-
-        return data
+        return await fetchFromServer()
     } catch (error) {
         console.error('Error loading file:', error)
         return null
