@@ -14,13 +14,33 @@ window.setToken = function (token) {
     }
 }
 
-window.getDeviceId = function () {
-    let deviceId = localStorage.getItem('device_id')
-    if (!deviceId) {
-        deviceId = 'device_' + Math.random().toString(36).substring(2) + Date.now().toString(36)
-        localStorage.setItem('device_id', deviceId)
+window.hashDeviceString = function (input) {
+    let hash = 5381
+    const str = String(input || '')
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash) + str.charCodeAt(i)
+        hash = hash & hash
     }
-    return deviceId
+    return Math.abs(hash).toString(36)
+}
+
+window.buildDeviceFingerprint = function () {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+    const parts = [
+        navigator.platform || '',
+        String(screen.width || ''),
+        String(screen.height || ''),
+        String(screen.colorDepth || ''),
+        tz
+    ]
+    return parts.join('|')
+}
+
+window.getDeviceId = function () {
+    const fingerprint = window.buildDeviceFingerprint()
+    const fingerprintId = 'fp_' + window.hashDeviceString(fingerprint)
+    localStorage.setItem('device_id', fingerprintId)
+    return fingerprintId
 }
 
 
@@ -35,7 +55,8 @@ window.loginUser = async function (username, password) {
             body: JSON.stringify({
                 username: username,
                 password: password,
-                deviceId: window.getDeviceId()
+                deviceId: window.getDeviceId(),
+                deviceFingerprint: window.buildDeviceFingerprint()
             })
         })
 
@@ -84,10 +105,22 @@ window.loadQuestionsFile = async function (fileKey, options) {
     const opts = options || {}
     const maxAgeMs = typeof opts.maxAgeMs === 'number' ? opts.maxAgeMs : 6 * 60 * 60 * 1000
     const forceReload = !!opts.forceReload
+    const hasArabicTexts = function (payload) {
+        if (!Array.isArray(payload)) return false
+        return payload.some(story =>
+            Array.isArray(story?.questions) &&
+            story.questions.some(q =>
+                Array.isArray(q?.texts) &&
+                q.texts.some(t => t && typeof t === 'object' && typeof t.ar === 'string' && t.ar.trim() !== '')
+            )
+        )
+    }
 
 
     if (!forceReload && window._questionsCache[fileKey]) {
-        return window._questionsCache[fileKey]
+        if (fileKey !== 'lesen1' || hasArabicTexts(window._questionsCache[fileKey])) {
+            return window._questionsCache[fileKey]
+        }
     }
 
     if (!forceReload && maxAgeMs > 0) {
@@ -96,8 +129,10 @@ window.loadQuestionsFile = async function (fileKey, options) {
             if (cachedRaw) {
                 const cached = JSON.parse(cachedRaw)
                 if (cached && typeof cached.ts === 'number' && Date.now() - cached.ts < maxAgeMs && cached.data) {
-                    window._questionsCache[fileKey] = cached.data
-                    return cached.data
+                    if (fileKey !== 'lesen1' || hasArabicTexts(cached.data)) {
+                        window._questionsCache[fileKey] = cached.data
+                        return cached.data
+                    }
                 }
             }
         } catch (e) {

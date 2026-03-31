@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch mit  MeisterQuiz · Premium Übung</title>
+    <title>Deutsch mit MeisterQuiz · Premium Übung</title>
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -1650,7 +1650,7 @@
                 </a>
                 <div class="logo">
                     <i class="fas fa-graduation-cap" style="color: var(--primary);"></i>
-                    <span>Deutsch mit  MeisterQuiz</span>
+                    <span>Deutsch mit MeisterQuiz</span>
                 </div>
                 <div></div>
             </div>
@@ -2214,6 +2214,8 @@
                 let correctCount = 0;
                 let wrongCount = 0;
                 const answered = new Set();
+                let currentQuestionLang = 'de';
+                const renderedQuestionTexts = [];
 
                 let scoreBarHtml = `
                     <div class="viewer-score-bar" id="viewerScoreBar">
@@ -2235,6 +2237,12 @@
                             </div>
                             <div class="summary-content" id="summaryText">${story.summary_ar || ''}</div>
                         </div>
+                        <div class="summary-box" style="margin-top: 12px;">
+                            <div class="summary-tabs">
+                                <button class="summary-tab question-lang-tab active" data-qlang="de">Satz: Deutsch</button>
+                                <button class="summary-tab question-lang-tab" data-qlang="ar">Satz: عربي</button>
+                            </div>
+                        </div>
                         ${scoreBarHtml}
                         <div class="questions-container" id="questionsContainer">
                 `;
@@ -2242,6 +2250,13 @@
                 if (story.questions && Array.isArray(story.questions)) {
                     story.questions.forEach((q, idx) => {
                         const randomText = q.texts && q.texts.length ? q.texts[Math.floor(Math.random() * q.texts.length)] : '?';
+                        const questionDe = typeof randomText === 'object' && randomText !== null
+                            ? (randomText.de || randomText.ar || '?')
+                            : String(randomText || '?');
+                        const questionAr = typeof randomText === 'object' && randomText !== null
+                            ? (randomText.ar || randomText.de || '?')
+                            : String(randomText || '?');
+                        renderedQuestionTexts.push({ de: questionDe, ar: questionAr });
                         const labels = [
                             { key: 'R', label: 'Richtig' },
                             { key: 'F', label: 'Falsch' }
@@ -2252,7 +2267,7 @@
                         `).join('');
                         html += `
                             <div class="question-card" data-qid="${idx}" data-num="${idx + 1}">
-                                <p class="question-text">${randomText}</p>
+                                <p class="question-text" dir="ltr">${questionDe}</p>
                                 <div class="options">${optionsHtml}</div>
                                 <div class="feedback" style="display:none;"></div>
                             </div>
@@ -2263,14 +2278,38 @@
                 html += `</div></div>`;
                 contentDiv.innerHTML = html;
 
-                document.querySelectorAll('.summary-tab').forEach(tab => {
+                document.querySelectorAll('.summary-tab[data-lang]').forEach(tab => {
                     tab.addEventListener('click', function () {
-                        document.querySelectorAll('.summary-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.summary-tab[data-lang]').forEach(t => t.classList.remove('active'));
                         this.classList.add('active');
                         const lang = this.dataset.lang;
                         document.getElementById('summaryText').textContent = lang === 'ar' ? story.summary_ar : story.summary_de;
                     });
                 });
+
+                function applyQuestionLanguage(lang) {
+                    currentQuestionLang = lang;
+                    document.querySelectorAll('.question-card .question-text').forEach((el, i) => {
+                        const txt = renderedQuestionTexts[i] || { de: '?', ar: '?' };
+                        if (lang === 'ar') {
+                            el.innerHTML = `<span style="display:block; direction:rtl; text-align:right;">${txt.ar}</span><span style="display:block; direction:ltr; text-align:left; margin-top:6px; opacity:0.92;">${txt.de}</span>`;
+                            el.dir = 'auto';
+                        } else {
+                            el.textContent = txt.de;
+                            el.dir = 'ltr';
+                        }
+                    });
+                }
+
+                document.querySelectorAll('.question-lang-tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        document.querySelectorAll('.question-lang-tab').forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        applyQuestionLanguage(this.dataset.qlang || 'de');
+                    });
+                });
+
+                applyQuestionLanguage(currentQuestionLang);
 
                 function updateScoreBar() {
                     const pts = document.getElementById('pointsValue');
