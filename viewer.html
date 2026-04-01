@@ -1678,6 +1678,7 @@
             const contentDiv = document.getElementById('contentContainer');
 
             const POINTS_PER_CORRECT = 10;
+            const LESEN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil1.pdf';
 
             if (!fileKey) {
                 showError('Keine Datei angegeben.');
@@ -2055,9 +2056,20 @@
 
             // ========== دوال عرض القصص ==========
             function displayStoryList(stories, fileKey) {
+                const teil1PdfBar = fileKey === 'lesen1' ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:22px;padding:14px 18px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="${LESEN_TEIL1_PDF_URL}" download="lesen_teil1.pdf" target="_blank" rel="noopener noreferrer"
+                               class="btn-secondary" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Leseverstehen Teil 1 – zum Studium</span>
+                            </a>
+                            <span style="color:var(--gray-400);font-size:0.9rem;">Material herunterladen oder im neuen Tab öffnen</span>
+                        </div>
+                ` : '';
                 let html = `
                     <div class="story-viewer">
                         <h1>Geschichten</h1>
+                        ${teil1PdfBar}
                         <p class="teil-list-subtitle" style="color: var(--gray-400); margin-bottom: 30px;">
                             <i class="fas fa-book-open" style="color: var(--primary);"></i>
                             Wählen Sie eine Geschichte
@@ -2256,9 +2268,20 @@
                     </div>
                 `;
 
+                const teil1PdfInStory = urlParams.get('file') === 'lesen1' ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="${LESEN_TEIL1_PDF_URL}" download="lesen_teil1.pdf" target="_blank" rel="noopener noreferrer"
+                               class="btn-secondary" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Teil 1 – zum Studium</span>
+                            </a>
+                        </div>
+                ` : '';
+
                 let html = `
                     <div class="story-viewer" id="storyViewer">
                         <h1>${story.title || 'Geschichte'}</h1>
+                        ${teil1PdfInStory}
                         <div class="summary-box">
                             <div class="summary-tabs">
                                 <button class="summary-tab active" data-lang="ar">عربي</button>
