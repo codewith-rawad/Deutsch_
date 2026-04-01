@@ -2420,11 +2420,31 @@
             }
 
             function displayAdvancedStory(story) {
+                function escapeHtmlAdv(s) {
+                    return String(s == null ? '' : s)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                }
+                function escapeAttrAdv(s) {
+                    return String(s == null ? '' : s)
+                        .replace(/&/g, '&amp;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                }
+
                 const totalQuestions = story.questions ? story.questions.length : 0;
                 let totalPoints = 0;
                 let correctCount = 0;
                 let wrongCount = 0;
                 const answered = new Set();
+
+                const hasQuestionLang = story.questions.some(function (q) {
+                    return (q.question_ar && String(q.question_ar).trim()) ||
+                        (Array.isArray(q.correct_answers_ar) && q.correct_answers_ar.length) ||
+                        (Array.isArray(q.wrong_answers_ar) && q.wrong_answers_ar.length);
+                });
 
                 let scoreBarHtml = `
                     <div class="viewer-score-bar" id="viewerScoreBar">
@@ -2435,6 +2455,15 @@
                         </div>
                     </div>
                 `;
+
+                const questionLangBarHtml = hasQuestionLang ? `
+                        <div class="summary-box" style="margin-top: 12px;">
+                            <div class="summary-tabs">
+                                <button type="button" class="summary-tab question-lang-tab active" data-qlang="de">Fragen: Deutsch</button>
+                                <button type="button" class="summary-tab question-lang-tab" data-qlang="ar">Fragen: عربي</button>
+                            </div>
+                        </div>
+                ` : '';
 
                 let html = `<div class="story-viewer" id="storyViewer"><h1>${story.title || 'Übung'}</h1>`;
                 if (story.summary_ar || story.summary_de) {
@@ -2448,21 +2477,53 @@
                         </div>
                     `;
                 }
+                html += questionLangBarHtml;
                 html += scoreBarHtml + '<div class="questions-container" id="questionsContainer">';
 
                 story.questions.forEach((q, idx) => {
                     const correctAnswers = q.correct_answers || [];
                     const wrongAnswers = q.wrong_answers || [];
-                    const oneCorrect = correctAnswers[Math.floor(Math.random() * correctAnswers.length)] || '';
-                    const allOptions = shuffle([oneCorrect, ...wrongAnswers].filter(Boolean));
-                    const optionsHtml = allOptions.map((opt, i) => {
-                        const isCorrect = opt === oneCorrect;
-                        const letter = String.fromCharCode(97 + i);
-                        return `<button class="option-mc" data-value="${letter}" data-correct="${isCorrect ? '1' : '0'}">${opt}</button>`;
-                    }).join('');
+                    const correctAr = q.correct_answers_ar || [];
+                    const wrongAr = q.wrong_answers_ar || [];
+
+                    const qDe = q.question || '';
+                    const qAr = (q.question_ar && String(q.question_ar).trim()) ? q.question_ar : qDe;
+
+                    let oneCorrect = '';
+                    let optionsHtml = '';
+
+                    if (hasQuestionLang && (correctAr.length || wrongAr.length)) {
+                        const ci = correctAnswers.length ? Math.floor(Math.random() * correctAnswers.length) : 0;
+                        oneCorrect = correctAnswers[ci] || '';
+                        const oneCorrectAr = (correctAr[ci] !== undefined && String(correctAr[ci]).trim() !== '') ? correctAr[ci] : oneCorrect;
+                        const correctPair = { de: oneCorrect, ar: oneCorrectAr };
+                        const wrongPairs = wrongAnswers.map(function (w, i) {
+                            const arW = (wrongAr[i] !== undefined && String(wrongAr[i]).trim() !== '') ? wrongAr[i] : w;
+                            return { de: w, ar: arW };
+                        });
+                        const allPairs = shuffle([correctPair].concat(wrongPairs));
+                        optionsHtml = allPairs.map(function (pair, i) {
+                            const isCorrect = pair === correctPair;
+                            const letter = String.fromCharCode(97 + i);
+                            return `<button type="button" class="option-mc" data-value="${letter}" data-correct="${isCorrect ? '1' : '0'}" data-de="${escapeAttrAdv(pair.de)}" data-ar="${escapeAttrAdv(pair.ar)}">${escapeHtmlAdv(pair.de)}</button>`;
+                        }).join('');
+                    } else {
+                        oneCorrect = correctAnswers.length ? correctAnswers[Math.floor(Math.random() * correctAnswers.length)] : '';
+                        const allOptions = shuffle([oneCorrect, ...wrongAnswers].filter(Boolean));
+                        optionsHtml = allOptions.map(function (opt, i) {
+                            const isCorrect = opt === oneCorrect;
+                            const letter = String.fromCharCode(97 + i);
+                            return `<button type="button" class="option-mc" data-value="${letter}" data-correct="${isCorrect ? '1' : '0'}" data-de="${escapeAttrAdv(opt)}" data-ar="${escapeAttrAdv(opt)}">${escapeHtmlAdv(opt)}</button>`;
+                        }).join('');
+                    }
+
+                    const qTextAttrs = hasQuestionLang
+                        ? ` class="question-text advanced-q-text" data-de="${escapeAttrAdv(qDe)}" data-ar="${escapeAttrAdv(qAr)}"`
+                        : ` class="question-text"`;
+
                     html += `
-                        <div class="question-card" data-qid="${idx}" data-num="${idx + 1}" data-correct-value="${oneCorrect}">
-                            <p class="question-text">${q.question || ''}</p>
+                        <div class="question-card" data-qid="${idx}" data-num="${idx + 1}" data-correct-value="${escapeAttrAdv(oneCorrect)}">
+                            <p${qTextAttrs}>${escapeHtmlAdv(qDe)}</p>
                             <div class="options mc-options">${optionsHtml}</div>
                             <div class="feedback" style="display:none;"></div>
                         </div>
@@ -2473,13 +2534,49 @@
                 contentDiv.innerHTML = html;
 
                 if (story.summary_ar || story.summary_de) {
-                    document.querySelectorAll('.summary-tab').forEach(tab => {
+                    document.querySelectorAll('.summary-tab[data-lang]').forEach(tab => {
                         tab.addEventListener('click', function () {
-                            document.querySelectorAll('.summary-tab').forEach(t => t.classList.remove('active'));
+                            document.querySelectorAll('.summary-tab[data-lang]').forEach(t => t.classList.remove('active'));
                             this.classList.add('active');
-                            document.getElementById('summaryText').textContent = this.dataset.lang === 'ar' ? story.summary_ar : story.summary_de;
+                            const el = document.getElementById('summaryText');
+                            if (el) el.textContent = this.dataset.lang === 'ar' ? story.summary_ar : story.summary_de;
                         });
                     });
+                }
+
+                function applyAdvancedQuestionLang(lang) {
+                    if (!hasQuestionLang) return;
+                    document.querySelectorAll('.advanced-q-text').forEach(function (qt) {
+                        const de = qt.getAttribute('data-de') || '';
+                        const ar = qt.getAttribute('data-ar') || de;
+                        if (lang === 'ar') {
+                            qt.innerHTML = '<span style="display:block;direction:rtl;text-align:right;">' + escapeHtmlAdv(ar) + '</span><span style="display:block;direction:ltr;text-align:left;margin-top:6px;opacity:0.92;">' + escapeHtmlAdv(de) + '</span>';
+                        } else {
+                            qt.textContent = de;
+                            qt.dir = 'ltr';
+                        }
+                    });
+                    document.querySelectorAll('#questionsContainer .option-mc').forEach(function (btn) {
+                        const de = btn.getAttribute('data-de') || '';
+                        const ar = btn.getAttribute('data-ar') || de;
+                        if (lang === 'ar') {
+                            btn.innerHTML = '<span style="display:block;direction:rtl;text-align:right;">' + escapeHtmlAdv(ar) + '</span><span style="display:block;direction:ltr;text-align:left;margin-top:6px;opacity:0.92;font-size:0.95em;">' + escapeHtmlAdv(de) + '</span>';
+                        } else {
+                            btn.textContent = de;
+                            btn.dir = 'ltr';
+                        }
+                    });
+                }
+
+                if (hasQuestionLang) {
+                    document.querySelectorAll('.question-lang-tab').forEach(function (tab) {
+                        tab.addEventListener('click', function () {
+                            document.querySelectorAll('.question-lang-tab').forEach(function (t) { t.classList.remove('active'); });
+                            this.classList.add('active');
+                            applyAdvancedQuestionLang(this.dataset.qlang || 'de');
+                        });
+                    });
+                    applyAdvancedQuestionLang('de');
                 }
 
                 function updateScoreBar() {
@@ -2520,7 +2617,7 @@
                             options.forEach(o => { if (o.dataset.correct === '1') o.classList.add('correct'); });
                             this.classList.add('wrong');
                             wrongCount++;
-                            feedback.innerHTML = '✗ Falsch. Richtige Antwort: ' + card.dataset.correctValue;
+                            feedback.innerHTML = '✗ Falsch. Richtige Antwort: ' + escapeHtmlAdv(card.dataset.correctValue || '');
                             feedback.className = 'feedback wrong';
                         }
                         feedback.style.display = 'block';
