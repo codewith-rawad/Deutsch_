@@ -211,3 +211,94 @@ window.loadQuestionsFile = async function (fileKey, options) {
         return null
     }
 }
+
+/**
+ * Starts a file download without opening a new tab (fetch → blob → save).
+ * Falls back to a direct anchor click or navigation if CORS/fetch fails.
+ * @returns {Promise<void>}
+ */
+window.downloadPdfToDevice = async function (url, filename) {
+    const name = filename || 'download.pdf'
+    try {
+        const res = await fetch(url, { mode: 'cors', cache: 'no-store' })
+        if (!res.ok) throw new Error('HTTP ' + res.status)
+        const blob = await res.blob()
+        const blobUrl = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = blobUrl
+        a.download = name
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setTimeout(function () { URL.revokeObjectURL(blobUrl) }, 2000)
+    } catch (e) {
+        console.warn('downloadPdfToDevice:', e)
+        try {
+            const a = document.createElement('a')
+            a.href = url
+            a.download = name
+            a.style.display = 'none'
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+        } catch (e2) {
+            window.location.href = url
+        }
+    }
+}
+
+;(function () {
+    if (window._lesenPdfStylesInjected) return
+    window._lesenPdfStylesInjected = true
+    const st = document.createElement('style')
+    st.textContent = [
+        'a.lesen-pdf-download.pdf-download-loading{opacity:0.92;cursor:wait!important;}',
+        'a.lesen-pdf-download.pdf-download-loading .fa-file-pdf{opacity:0.35;}'
+    ].join('')
+    document.head.appendChild(st)
+})()
+
+;(function () {
+    if (window._lesenPdfClickBound) return
+    window._lesenPdfClickBound = true
+    document.addEventListener('click', function (e) {
+        const el = e.target.closest('a.lesen-pdf-download')
+        if (!el) return
+        const url = el.getAttribute('data-pdf-url')
+        const name = el.getAttribute('data-pdf-name') || 'download.pdf'
+        if (!url) return
+        e.preventDefault()
+        if (el.getAttribute('aria-busy') === 'true') return
+
+        const originalHtml = el.innerHTML
+        el.setAttribute('aria-busy', 'true')
+        el.classList.add('pdf-download-loading')
+        el.style.pointerEvents = 'none'
+        el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>جاري التحميل… · Wird geladen…</span></span>'
+
+        if (typeof window.showToast === 'function') {
+            try {
+                window.showToast('جاري تحميل الملف… · Download wird vorbereitet…', 'info')
+            } catch (toastErr) { /* ignore */ }
+        }
+
+        ;(async function () {
+            try {
+                if (window.downloadPdfToDevice) {
+                    await window.downloadPdfToDevice(url, name)
+                }
+                if (typeof window.showToast === 'function') {
+                    try {
+                        window.showToast('تم بدء التحميل · Download gestartet', 'success')
+                    } catch (toastErr2) { /* ignore */ }
+                }
+            } finally {
+                el.innerHTML = originalHtml
+                el.removeAttribute('aria-busy')
+                el.classList.remove('pdf-download-loading')
+                el.style.pointerEvents = ''
+            }
+        })()
+    }, true)
+})()
