@@ -1683,11 +1683,13 @@
             const HOREN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil1.pdf';
             const HOREN_TEIL2_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil2.pdf';
             const HOREN_TEIL3_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil3.pdf';
+            const HOREN_TEIL4_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil4.pdf';
 
             function getHorenPdfMeta(fileKey) {
                 if (fileKey === 'horen1') return { url: HOREN_TEIL1_PDF_URL, name: 'horen_teil1.pdf', num: '1' };
                 if (fileKey === 'horen2') return { url: HOREN_TEIL2_PDF_URL, name: 'horen_teil2.pdf', num: '2' };
                 if (fileKey === 'horen3') return { url: HOREN_TEIL3_PDF_URL, name: 'horen_teil3.pdf', num: '3' };
+                if (fileKey === 'horen4') return { url: HOREN_TEIL4_PDF_URL, name: 'horen_teil4.pdf', num: '4' };
                 return null;
             }
 
@@ -2838,28 +2840,131 @@
             }
 
             function displayHoren4Section(section, dataName, fileKey, secIdx) {
+                const escapeHtmlSection = (s) => String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                const escapeAttrSection = (s) => String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+                const TYPE_AR = { Mann: 'رجل', Frau: 'امرأة', Moderator: 'مقدم برنامج' };
+                const types = ['Mann', 'Frau', 'Moderator'];
                 const items = [];
                 (section.persons || []).forEach(person => {
                     const personType = person.person_type || 'Person';
                     (person.statements || []).forEach(st => {
-                        const text = st.variations && st.variations.length ? st.variations[Math.floor(Math.random() * st.variations.length)] : (st.original || '');
-                        items.push({ text, correct: personType });
+                        let textDe = '';
+                        let textAr = '';
+                        if (st.variations && st.variations.length) {
+                            const vi = Math.floor(Math.random() * st.variations.length);
+                            textDe = st.variations[vi] || '';
+                            if (st.variations_ar && st.variations_ar.length) {
+                                textAr = st.variations_ar[vi % st.variations_ar.length] || st.original_ar || '';
+                            } else {
+                                textAr = st.original_ar || '';
+                            }
+                        } else {
+                            textDe = st.original || '';
+                            textAr = st.original_ar || '';
+                        }
+                        items.push({ textDe, textAr, correct: personType });
                     });
                 });
                 const shuffledItems = shuffle(items);
-                const types = ['Mann', 'Frau', 'Moderator'];
-                let html = `<div class="story-viewer"><a href="viewer.html?file=${encodeURIComponent(fileKey)}" class="back-teil-link"><i class="fas fa-arrow-left"></i> Zurück zur Teilliste</a><h1>${dataName || 'Hörverstehen'}</h1><h2 class="teil-current">Teil ${secIdx + 1}</h2><p class="horen4-instruction">Wer hat das gesagt? Wählen Sie: Mann, Frau oder Moderator.</p><div class="section-card"><h2 class="section-title">${section.section_title}</h2><div class="questions-area">`;
+
+                const titleDe = section.section_title || '';
+                const titleAr = section.section_title_ar || titleDe;
+                const instrDe = 'Wer hat das gesagt? Wählen Sie: Mann, Frau oder Moderator.';
+                const instrAr = 'من قال هذا؟ اختر: رجل، امرأة أو مقدم برنامج.';
+                const hasBilingual = !!(section.section_title_ar || shuffledItems.some(it => it.textAr));
+
+                const horenPdfMetaH4 = getHorenPdfMeta(fileKey);
+                const pdfBarH4 = horenPdfMetaH4 ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${horenPdfMetaH4.url}" data-pdf-name="${horenPdfMetaH4.name}"
+                               style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Hörverstehen Teil ${horenPdfMetaH4.num} – zum Studium</span>
+                            </a>
+                        </div>
+                ` : '';
+
+                const langBarHtml = hasBilingual ? `
+                    <div class="summary-box" style="margin-top:12px;margin-bottom:12px;">
+                        <div class="summary-tabs">
+                            <button type="button" class="summary-tab section-question-lang-tab active" data-qlang="de">Fragen: Deutsch</button>
+                            <button type="button" class="summary-tab section-question-lang-tab" data-qlang="ar">Fragen: عربي</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                const titleInner = hasBilingual
+                    ? `<span class="section-q-text" data-de="${escapeAttrSection(titleDe)}" data-ar="${escapeAttrSection(titleAr)}">${escapeHtmlSection(titleDe)}</span>`
+                    : escapeHtmlSection(titleDe);
+
+                const instrInner = hasBilingual
+                    ? `<p class="horen4-instruction section-q-text" data-de="${escapeAttrSection(instrDe)}" data-ar="${escapeAttrSection(instrAr)}">${escapeHtmlSection(instrDe)}</p>`
+                    : `<p class="horen4-instruction">${escapeHtmlSection(instrDe)}</p>`;
+
+                let html = `<div class="story-viewer"><a href="viewer.html?file=${encodeURIComponent(fileKey)}" class="back-teil-link"><i class="fas fa-arrow-left"></i> Zurück zur Teilliste</a><h1>${escapeHtmlSection(dataName || 'Hörverstehen')}</h1><h2 class="teil-current">Teil ${secIdx + 1}</h2>${pdfBarH4}${instrInner}${langBarHtml}<div class="section-card"><h2 class="section-title">${titleInner}</h2><div class="questions-area">`;
                 shuffledItems.forEach((item, idx) => {
                     const opts = shuffle(types.slice());
-                    const optionsHtml = opts.map(t => `<button class="option-horen4" data-answer="${t}">${t}</button>`).join('');
+                    const optionsHtml = opts.map(t => {
+                        const tAr = TYPE_AR[t] || t;
+                        return `<button type="button" class="option-horen4 section-q-option" data-answer="${t}" data-de="${escapeAttrSection(t)}" data-ar="${escapeAttrSection(tAr)}">${escapeHtmlSection(t)}</button>`;
+                    }).join('');
+                    const safeStmtDe = escapeHtmlSection(item.textDe);
+                    const stmtAttrs = hasBilingual && item.textAr
+                        ? ` class="question-text section-q-text" data-de="${escapeAttrSection(item.textDe)}" data-ar="${escapeAttrSection(item.textAr)}"`
+                        : ` class="question-text"`;
+                    const stmtBody = hasBilingual && item.textAr ? safeStmtDe : escapeHtmlSection(item.textDe);
                     html += `<div class="question-block" data-type="horen4" data-correct="${item.correct}" data-id="h4-${idx}">
-                        <p class="question-text">${item.text}</p>
+                        <p${stmtAttrs}>${stmtBody}</p>
                         <div class="options options-horen4">${optionsHtml}</div>
                         <div class="feedback" style="display:none;"></div>
                     </div>`;
                 });
                 html += '</div></div></div>';
                 contentDiv.innerHTML = html;
+
+                function applyHoren4QuestionLanguage(lang) {
+                    document.querySelectorAll('.section-q-text').forEach(function (el) {
+                        const de = el.getAttribute('data-de') || '';
+                        const ar = el.getAttribute('data-ar') || de;
+                        if (lang === 'ar') {
+                            el.innerHTML = '<span style="display:block;direction:rtl;text-align:right;">' + escapeHtmlSection(ar) + '</span><span style="display:block;direction:ltr;text-align:left;margin-top:6px;opacity:0.92;">' + escapeHtmlSection(de) + '</span>';
+                            el.dir = 'auto';
+                        } else {
+                            el.textContent = de;
+                            el.dir = 'ltr';
+                        }
+                    });
+                    document.querySelectorAll('.section-q-option').forEach(function (btn) {
+                        const de = btn.getAttribute('data-de') || '';
+                        const ar = btn.getAttribute('data-ar') || de;
+                        if (lang === 'ar') {
+                            btn.innerHTML = '<span style="display:block;direction:rtl;text-align:right;">' + escapeHtmlSection(ar) + '</span><span style="display:block;direction:ltr;text-align:left;margin-top:6px;opacity:0.92;font-size:0.95em;">' + escapeHtmlSection(de) + '</span>';
+                            btn.dir = 'auto';
+                        } else {
+                            btn.textContent = de;
+                            btn.dir = 'ltr';
+                        }
+                    });
+                }
+
+                if (hasBilingual) {
+                    document.querySelectorAll('.section-question-lang-tab').forEach(function (tab) {
+                        tab.addEventListener('click', function () {
+                            document.querySelectorAll('.section-question-lang-tab').forEach(function (t) { t.classList.remove('active'); });
+                            this.classList.add('active');
+                            applyHoren4QuestionLanguage(this.dataset.qlang || 'de');
+                        });
+                    });
+                    applyHoren4QuestionLanguage('de');
+                }
 
                 let totalPoints = 0, correctCount = 0, wrongCount = 0, answeredCount = 0;
                 const blocks = contentDiv.querySelectorAll('.question-block');
