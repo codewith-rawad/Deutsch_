@@ -1680,6 +1680,7 @@
             const POINTS_PER_CORRECT = 10;
             const LESEN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil1.pdf';
             const LESEN_TEIL2_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil2.pdf';
+            const LESEN_TEIL5_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil5.pdf';
             const HOREN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil1.pdf';
             const HOREN_TEIL2_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil2.pdf';
             const HOREN_TEIL3_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil3.pdf';
@@ -1847,8 +1848,8 @@
                         return;
                     }
 
-                    // للقصص المتقدمة (مثل lesen5)
-                    if (firstQ && (firstQ.correct_answers || firstQ.question)) {
+                    // للقصص المتقدمة (مثل lesen5) — تنسيق قديم (question) أو جديد (question_de / correct_answers_de)
+                    if (firstQ && (firstQ.correct_answers || firstQ.question || firstQ.question_de || firstQ.correct_answers_de || firstQ.wrong_answers_de)) {
                         if (storyIndex !== null && storyIndex !== '' && data[parseInt(storyIndex, 10)] !== undefined) {
                             displayAdvancedStory(data[parseInt(storyIndex, 10)]);
                         } else {
@@ -2176,10 +2177,20 @@
                             <span style="color:var(--gray-400);font-size:0.9rem;">Material herunterladen oder im neuen Tab öffnen</span>
                         </div>
                 ` : '';
+                const teil5PdfBar = fileKey === 'lesen5' ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:22px;padding:14px 18px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${LESEN_TEIL5_PDF_URL}" data-pdf-name="lesen_teil5.pdf"
+                               style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Leseverstehen Teil 5 – zum Studium</span>
+                            </a>
+                            <span style="color:var(--gray-400);font-size:0.9rem;">Material herunterladen oder im neuen Tab öffnen</span>
+                        </div>
+                ` : '';
                 let html = `
                     <div class="story-viewer">
                         <h1>Fortgeschrittene Übungen</h1>
-                        ${teil2PdfBar}
+                        ${teil2PdfBar}${teil5PdfBar}
                         <p class="teil-list-subtitle" style="color: var(--gray-400); margin-bottom: 30px;">
                             <i class="fas fa-crown" style="color: var(--gold);"></i>
                             Wählen Sie eine Übung (Premium)
@@ -2477,9 +2488,14 @@
                 const answered = new Set();
 
                 const hasQuestionLang = story.questions.some(function (q) {
+                    const corrDe = q.correct_answers_de || q.correct_answers;
+                    const wrongDe = q.wrong_answers_de || q.wrong_answers;
                     return (q.question_ar && String(q.question_ar).trim()) ||
+                        (q.question_de && q.question_ar && String(q.question_ar).trim()) ||
                         (Array.isArray(q.correct_answers_ar) && q.correct_answers_ar.length) ||
-                        (Array.isArray(q.wrong_answers_ar) && q.wrong_answers_ar.length);
+                        (Array.isArray(q.wrong_answers_ar) && q.wrong_answers_ar.length) ||
+                        (Array.isArray(corrDe) && corrDe.length && Array.isArray(q.correct_answers_ar) && q.correct_answers_ar.length) ||
+                        (Array.isArray(wrongDe) && wrongDe.length && Array.isArray(q.wrong_answers_ar) && q.wrong_answers_ar.length);
                 });
 
                 let scoreBarHtml = `
@@ -2501,7 +2517,8 @@
                         </div>
                 ` : '';
 
-                const teil2PdfInAdvanced = urlParams.get('file') === 'lesen2' ? `
+                const advFile = urlParams.get('file');
+                const teil2PdfInAdvanced = advFile === 'lesen2' ? `
                         <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
                             <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${LESEN_TEIL2_PDF_URL}" data-pdf-name="lesen_teil2.pdf"
                                style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
@@ -2510,8 +2527,17 @@
                             </a>
                         </div>
                 ` : '';
+                const teil5PdfInAdvanced = advFile === 'lesen5' ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${LESEN_TEIL5_PDF_URL}" data-pdf-name="lesen_teil5.pdf"
+                               style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Teil 5 – zum Studium</span>
+                            </a>
+                        </div>
+                ` : '';
 
-                let html = `<div class="story-viewer" id="storyViewer"><h1>${story.title || 'Übung'}</h1>${teil2PdfInAdvanced}`;
+                let html = `<div class="story-viewer" id="storyViewer"><h1>${story.title || 'Übung'}</h1>${teil2PdfInAdvanced}${teil5PdfInAdvanced}`;
                 if (story.summary_ar || story.summary_de) {
                     html += `
                         <div class="summary-box">
@@ -2527,18 +2553,18 @@
                 html += scoreBarHtml + '<div class="questions-container" id="questionsContainer">';
 
                 story.questions.forEach((q, idx) => {
-                    const correctAnswers = q.correct_answers || [];
-                    const wrongAnswers = q.wrong_answers || [];
+                    const correctAnswers = q.correct_answers_de || q.correct_answers || [];
+                    const wrongAnswers = q.wrong_answers_de || q.wrong_answers || [];
                     const correctAr = q.correct_answers_ar || [];
                     const wrongAr = q.wrong_answers_ar || [];
 
-                    const qDe = q.question || '';
+                    const qDe = q.question_de || q.question || '';
                     const qAr = (q.question_ar && String(q.question_ar).trim()) ? q.question_ar : qDe;
 
                     let oneCorrect = '';
                     let optionsHtml = '';
 
-                    if (hasQuestionLang && (correctAr.length || wrongAr.length)) {
+                    if (hasQuestionLang && (correctAr.length || wrongAr.length) && correctAnswers.length) {
                         const ci = correctAnswers.length ? Math.floor(Math.random() * correctAnswers.length) : 0;
                         oneCorrect = correctAnswers[ci] || '';
                         const oneCorrectAr = (correctAr[ci] !== undefined && String(correctAr[ci]).trim() !== '') ? correctAr[ci] : oneCorrect;
