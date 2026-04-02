@@ -1680,6 +1680,7 @@
             const POINTS_PER_CORRECT = 10;
             const LESEN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil1.pdf';
             const LESEN_TEIL2_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil2.pdf';
+            const HOREN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil1.pdf';
 
             if (!fileKey) {
                 showError('Keine Datei angegeben.');
@@ -1898,6 +1899,16 @@
             function displaySectionList(data, fileKey) {
                 const backUrl = 'dashboard.html';
                 const isHoren = fileKey && (fileKey.startsWith('horen') || (data.name && data.name.toLowerCase().includes('hörverstehen')));
+                const horen1PdfBar = fileKey === 'horen1' ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:22px;padding:14px 18px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${HOREN_TEIL1_PDF_URL}" data-pdf-name="horen_teil1.pdf"
+                               style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Hörverstehen Teil 1 – zum Studium</span>
+                            </a>
+                            <span style="color:var(--gray-400);font-size:0.9rem;">Material herunterladen oder im neuen Tab öffnen</span>
+                        </div>
+                ` : '';
 
                 // تحديد الأيقونة واللون حسب نوع الملف
                 let sectionIcon = 'fa-layer-group';
@@ -1941,6 +1952,7 @@
                                 </p>
                             </div>
                         </div>
+                        ${horen1PdfBar}
                         
                         <div class="stats-summary">
                             <div>
@@ -2885,7 +2897,47 @@
                 const section = data.sections[0];
                 const secIdx = currentSectionIdx !== undefined ? currentSectionIdx : 0;
                 const file = fileKey || urlParams.get('file');
-                let html = `<div class="story-viewer"><a href="viewer.html?file=${encodeURIComponent(file)}" class="back-teil-link"><i class="fas fa-arrow-left"></i> Zurück zur Teilliste</a><h1>${data.name || 'Übungen'}</h1><h2 class="teil-current">Teil ${secIdx + 1}</h2><div class="section-card"><h2 class="section-title">${section.section_title}</h2>`;
+                const horen1PdfInSection = file === 'horen1' ? `
+                        <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${HOREN_TEIL1_PDF_URL}" data-pdf-name="horen_teil1.pdf"
+                               style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
+                                <i class="fas fa-file-pdf" style="color:#f87171;"></i>
+                                <span>PDF Hörverstehen Teil 1 – zum Studium</span>
+                            </a>
+                        </div>
+                ` : '';
+                let currentSectionQuestionLang = 'de';
+                const escapeHtmlSection = (s) => String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                const escapeAttrSection = (s) => String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                const hasBilingualQuestions = Array.isArray(section.questions) && section.questions.some(q => {
+                    if (!q || !q.question_type) return false;
+                    if (q.question_type === 'richtig_falsch') {
+                        const hasStatementPair = Array.isArray(q.statements) && q.statements.some(st => st && typeof st === 'object' && (st.de || st.ar));
+                        const hasQuestionPair = !!(q.question_text_de || q.question_text_ar);
+                        return hasStatementPair || hasQuestionPair;
+                    }
+                    if (q.question_type === 'multiple_choice') {
+                        const hasQuestionText =
+                            (q.question_text && typeof q.question_text === 'object' && (q.question_text.de || q.question_text.ar)) ||
+                            !!(q.question_text_de || q.question_text_ar);
+                        const hasOptions = Array.isArray(q.options) && q.options.some(opt =>
+                            opt && (
+                                (typeof opt.text === 'object' && opt.text && (opt.text.de || opt.text.ar)) ||
+                                opt.de || opt.ar
+                            )
+                        );
+                        return hasQuestionText || hasOptions;
+                    }
+                    return false;
+                });
+                let html = `<div class="story-viewer"><a href="viewer.html?file=${encodeURIComponent(file)}" class="back-teil-link"><i class="fas fa-arrow-left"></i> Zurück zur Teilliste</a><h1>${data.name || 'Übungen'}</h1><h2 class="teil-current">Teil ${secIdx + 1}</h2>${horen1PdfInSection}<div class="section-card"><h2 class="section-title">${section.section_title}</h2>`;
                 if (section.summary_ar || section.summary_de) {
                     html += `<div class="summary-box section-summary">
                         <div class="summary-tabs">
@@ -2896,6 +2948,14 @@
                     </div>`;
                 }
                 if (section.hint) html += `<p class="section-hint">${section.hint}</p>`;
+                if (hasBilingualQuestions) {
+                    html += `<div class="summary-box" style="margin-top:12px;">
+                        <div class="summary-tabs">
+                            <button type="button" class="summary-tab section-question-lang-tab active" data-qlang="de">Fragen: Deutsch</button>
+                            <button type="button" class="summary-tab section-question-lang-tab" data-qlang="ar">Fragen: عربي</button>
+                        </div>
+                    </div>`;
+                }
                 html += '<div class="questions-area">';
                 if (section.questions) {
                     section.questions.forEach(q => {
@@ -2919,6 +2979,43 @@
                             document.getElementById('sectionSummaryText').textContent = lang === 'ar' ? section.summary_ar : section.summary_de;
                         });
                     });
+                }
+
+                function applySectionQuestionLanguage(lang) {
+                    currentSectionQuestionLang = lang;
+                    document.querySelectorAll('.section-q-text').forEach(function (el) {
+                        const de = el.getAttribute('data-de') || '';
+                        const ar = el.getAttribute('data-ar') || de;
+                        if (lang === 'ar') {
+                            el.innerHTML = '<span style="display:block;direction:rtl;text-align:right;">' + escapeHtmlSection(ar) + '</span><span style="display:block;direction:ltr;text-align:left;margin-top:6px;opacity:0.92;">' + escapeHtmlSection(de) + '</span>';
+                            el.dir = 'auto';
+                        } else {
+                            el.textContent = de;
+                            el.dir = 'ltr';
+                        }
+                    });
+                    document.querySelectorAll('.section-q-option').forEach(function (btn) {
+                        const de = btn.getAttribute('data-de') || '';
+                        const ar = btn.getAttribute('data-ar') || de;
+                        if (lang === 'ar') {
+                            btn.innerHTML = '<span style="display:block;direction:rtl;text-align:right;">' + escapeHtmlSection(ar) + '</span><span style="display:block;direction:ltr;text-align:left;margin-top:6px;opacity:0.92;font-size:0.95em;">' + escapeHtmlSection(de) + '</span>';
+                            btn.dir = 'auto';
+                        } else {
+                            btn.textContent = de;
+                            btn.dir = 'ltr';
+                        }
+                    });
+                }
+
+                if (hasBilingualQuestions) {
+                    document.querySelectorAll('.section-question-lang-tab').forEach(function (tab) {
+                        tab.addEventListener('click', function () {
+                            document.querySelectorAll('.section-question-lang-tab').forEach(function (t) { t.classList.remove('active'); });
+                            this.classList.add('active');
+                            applySectionQuestionLanguage(this.dataset.qlang || 'de');
+                        });
+                    });
+                    applySectionQuestionLanguage(currentSectionQuestionLang);
                 }
 
                 attachSectionHandlers(questionBlocks, file, secIdx);
@@ -2965,7 +3062,15 @@
                 const id = 'q' + Math.random().toString(36).slice(2, 9);
                 questionBlocks.push({ id, correct: q.correct_answer, type: q.question_type });
                 if (q.question_type === 'richtig_falsch') {
-                    const text = q.statements && q.statements.length ? q.statements[Math.floor(Math.random() * q.statements.length)] : q.question_text || '';
+                    const picked = q.statements && q.statements.length
+                        ? q.statements[Math.floor(Math.random() * q.statements.length)]
+                        : (q.question_text_de || q.question_text_ar || q.question_text || '');
+                    const textDe = typeof picked === 'object' && picked !== null
+                        ? (picked.de || picked.ar || '')
+                        : String(q.question_text_de || picked || '');
+                    const textAr = typeof picked === 'object' && picked !== null
+                        ? (picked.ar || picked.de || '')
+                        : String(q.question_text_ar || picked || '');
                     const labels = [
                         { val: 'richtig', label: 'Richtig' },
                         { val: 'falsch', label: 'Falsch' }
@@ -2976,7 +3081,7 @@
                     `).join('');
                     return `
                         <div class="question-block" data-type="tf" data-id="${id}" data-correct="${q.correct_answer}">
-                            <p>${text}</p>
+                            <p class="question-text section-q-text" data-de="${textDe.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}" data-ar="${textAr.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}">${textDe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
                             <div class="options">${optionsHtml}</div>
                             <div class="feedback" style="display:none;"></div>
                         </div>
@@ -2984,10 +3089,30 @@
                 }
                 if (q.question_type === 'multiple_choice' && q.options) {
                     const opts = shuffle(q.options.slice());
-                    const optionsHtml = opts.map(opt => `<button class="option-mc" data-value="${opt.id}">${opt.text}</button>`).join('');
+                    const questionDe = typeof q.question_text === 'object' && q.question_text !== null
+                        ? (q.question_text.de || q.question_text.ar || '')
+                        : (q.question_text_de || q.question_text || '');
+                    const questionAr = typeof q.question_text === 'object' && q.question_text !== null
+                        ? (q.question_text.ar || q.question_text.de || '')
+                        : (q.question_text_ar || q.question_text || q.question_text_de || '');
+                    const optionsHtml = opts.map(opt => {
+                        const optDe = typeof opt.text === 'object' && opt.text !== null
+                            ? (opt.text.de || opt.text.ar || '')
+                            : (opt.de || opt.text || '');
+                        const optAr = typeof opt.text === 'object' && opt.text !== null
+                            ? (opt.text.ar || opt.text.de || '')
+                            : (opt.ar || opt.text || opt.de || '');
+                        const safeOptDe = String(optDe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeOptDeAttr = String(optDe).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeOptArAttr = String(optAr).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return `<button class="option-mc section-q-option" data-value="${opt.id}" data-de="${safeOptDeAttr}" data-ar="${safeOptArAttr}">${safeOptDe}</button>`;
+                    }).join('');
+                    const safeQuestionDe = String(questionDe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeQuestionDeAttr = String(questionDe).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeQuestionArAttr = String(questionAr).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     return `
                         <div class="question-block" data-type="mc" data-id="${id}" data-correct="${q.correct_answer}">
-                            <p>${q.question_text || ''}</p>
+                            <p class="question-text section-q-text" data-de="${safeQuestionDeAttr}" data-ar="${safeQuestionArAttr}">${safeQuestionDe}</p>
                             <div class="options mc-options">${optionsHtml}</div>
                             <div class="feedback" style="display:none;"></div>
                         </div>
