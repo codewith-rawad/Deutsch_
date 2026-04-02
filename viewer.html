@@ -1682,6 +1682,14 @@
             const LESEN_TEIL2_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil2.pdf';
             const HOREN_TEIL1_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil1.pdf';
             const HOREN_TEIL2_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil2.pdf';
+            const HOREN_TEIL3_PDF_URL = 'https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/horen_teil3.pdf';
+
+            function getHorenPdfMeta(fileKey) {
+                if (fileKey === 'horen1') return { url: HOREN_TEIL1_PDF_URL, name: 'horen_teil1.pdf', num: '1' };
+                if (fileKey === 'horen2') return { url: HOREN_TEIL2_PDF_URL, name: 'horen_teil2.pdf', num: '2' };
+                if (fileKey === 'horen3') return { url: HOREN_TEIL3_PDF_URL, name: 'horen_teil3.pdf', num: '3' };
+                return null;
+            }
 
             if (!fileKey) {
                 showError('Keine Datei angegeben.');
@@ -1900,12 +1908,13 @@
             function displaySectionList(data, fileKey) {
                 const backUrl = 'dashboard.html';
                 const isHoren = fileKey && (fileKey.startsWith('horen') || (data.name && data.name.toLowerCase().includes('hörverstehen')));
-                const horenPdfBar = (fileKey === 'horen1' || fileKey === 'horen2') ? `
+                const horenPdfMeta = getHorenPdfMeta(fileKey);
+                const horenPdfBar = horenPdfMeta ? `
                         <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:22px;padding:14px 18px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
-                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${fileKey === 'horen2' ? HOREN_TEIL2_PDF_URL : HOREN_TEIL1_PDF_URL}" data-pdf-name="${fileKey === 'horen2' ? 'horen_teil2.pdf' : 'horen_teil1.pdf'}"
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${horenPdfMeta.url}" data-pdf-name="${horenPdfMeta.name}"
                                style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
                                 <i class="fas fa-file-pdf" style="color:#f87171;"></i>
-                                <span>PDF Hörverstehen Teil ${fileKey === 'horen2' ? '2' : '1'} – zum Studium</span>
+                                <span>PDF Hörverstehen Teil ${horenPdfMeta.num} – zum Studium</span>
                             </a>
                             <span style="color:var(--gray-400);font-size:0.9rem;">Material herunterladen oder im neuen Tab öffnen</span>
                         </div>
@@ -2898,12 +2907,13 @@
                 const section = data.sections[0];
                 const secIdx = currentSectionIdx !== undefined ? currentSectionIdx : 0;
                 const file = fileKey || urlParams.get('file');
-                const horenPdfInSection = (file === 'horen1' || file === 'horen2') ? `
+                const horenPdfMetaSec = getHorenPdfMeta(file);
+                const horenPdfInSection = horenPdfMetaSec ? `
                         <div class="teil1-pdf-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:var(--radius-xl);">
-                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${file === 'horen2' ? HOREN_TEIL2_PDF_URL : HOREN_TEIL1_PDF_URL}" data-pdf-name="${file === 'horen2' ? 'horen_teil2.pdf' : 'horen_teil1.pdf'}"
+                            <a href="#" class="btn-secondary lesen-pdf-download" data-pdf-url="${horenPdfMetaSec.url}" data-pdf-name="${horenPdfMetaSec.name}"
                                style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
                                 <i class="fas fa-file-pdf" style="color:#f87171;"></i>
-                                <span>PDF Hörverstehen Teil ${file === 'horen2' ? '2' : '1'} – zum Studium</span>
+                                <span>PDF Hörverstehen Teil ${horenPdfMetaSec.num} – zum Studium</span>
                             </a>
                         </div>
                 ` : '';
@@ -2917,7 +2927,7 @@
                     .replace(/"/g, '&quot;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
-                const hasBilingualQuestions = Array.isArray(section.questions) && section.questions.some(q => {
+                const hasBilingualQuestions = (Array.isArray(section.questions) && section.questions.some(q => {
                     if (!q) return false;
                     const qType = q.question_type || (q.options ? 'multiple_choice' : '');
                     if (qType === 'richtig_falsch') {
@@ -2938,7 +2948,7 @@
                         return hasQuestionText || hasOptions;
                     }
                     return false;
-                });
+                })) || (Array.isArray(section.statements) && section.statements.some(s => s && (s.original_ar || (Array.isArray(s.variations_ar) && s.variations_ar.length))));
                 let html = `<div class="story-viewer"><a href="viewer.html?file=${encodeURIComponent(file)}" class="back-teil-link"><i class="fas fa-arrow-left"></i> Zurück zur Teilliste</a><h1>${data.name || 'Übungen'}</h1><h2 class="teil-current">Teil ${secIdx + 1}</h2>${horenPdfInSection}<div class="section-card"><h2 class="section-title">${section.section_title}</h2>`;
                 if (section.summary_ar || section.summary_de) {
                     html += `<div class="summary-box section-summary">
@@ -2973,9 +2983,9 @@
                 contentDiv.innerHTML = html;
 
                 if (section.summary_ar || section.summary_de) {
-                    document.querySelectorAll('.summary-tab').forEach(tab => {
+                    document.querySelectorAll('.section-summary .summary-tab').forEach(tab => {
                         tab.addEventListener('click', function () {
-                            document.querySelectorAll('.summary-tab').forEach(t => t.classList.remove('active'));
+                            document.querySelectorAll('.section-summary .summary-tab').forEach(t => t.classList.remove('active'));
                             this.classList.add('active');
                             const lang = this.dataset.lang;
                             document.getElementById('sectionSummaryText').textContent = lang === 'ar' ? section.summary_ar : section.summary_de;
@@ -3059,13 +3069,31 @@
                 const id = 's' + Math.random().toString(36).slice(2, 9);
                 const answer = s.answer || '';
                 questionBlocks.push({ id, correct: answer, type: 'tf' });
-                const text = s.variations && s.variations.length
-                    ? s.variations[Math.floor(Math.random() * s.variations.length)]
-                    : (s.original || '');
+                let textDe = '';
+                let textAr = '';
+                if (s.variations && s.variations.length) {
+                    const vi = Math.floor(Math.random() * s.variations.length);
+                    textDe = s.variations[vi] || '';
+                    if (s.variations_ar && s.variations_ar.length) {
+                        textAr = s.variations_ar[vi % s.variations_ar.length] || s.original_ar || '';
+                    } else {
+                        textAr = s.original_ar || '';
+                    }
+                } else {
+                    textDe = s.original || '';
+                    textAr = s.original_ar || '';
+                }
+                const safeDe = String(textDe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeDeAttr = String(textDe).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeArAttr = String(textAr).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const qTextClass = (s.original_ar || (s.variations_ar && s.variations_ar.length)) ? 'question-text section-q-text' : 'question-text';
+                const qTextAttrs = (s.original_ar || (s.variations_ar && s.variations_ar.length))
+                    ? ` class="${qTextClass}" data-de="${safeDeAttr}" data-ar="${safeArAttr}"`
+                    : ` class="question-text"`;
                 const labels = shuffle([{ val: 'richtig', label: 'Richtig' }, { val: 'falsch', label: 'Falsch' }]);
                 const optionsHtml = labels.map(o => `<button class="option-${o.val === 'richtig' ? 'r' : 'f'}" data-answer="${o.val}">${o.label}</button>`).join('');
                 return `<div class="question-block" data-type="tf" data-id="${id}" data-correct="${answer}">
-                    <p class="question-text">${text}</p>
+                    <p${qTextAttrs}>${safeDe}</p>
                     <div class="options">${optionsHtml}</div>
                     <div class="feedback" style="display:none;"></div>
                 </div>`;
