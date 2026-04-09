@@ -1472,6 +1472,7 @@
             box-shadow: 0 4px 20px var(--purple-glow);
         }
 
+
         .teil-current {
             font-family: var(--font-display);
             font-size: 1.8rem;
@@ -1694,13 +1695,20 @@
                 return null;
             }
 
+            function isLoggedInUser() {
+                const hasSession = typeof window.checkSession === 'function' && window.checkSession();
+                const hasToken = typeof window.getToken === 'function' && !!window.getToken();
+                return !!(hasSession || hasToken);
+            }
+
+
             if (!fileKey) {
                 showError('Keine Datei angegeben.');
                 return;
             }
 
             const paidFiles = ['lesen2', 'lesen3', 'lesen4', 'lesen5', 'horen1', 'horen2', 'horen3', 'horen4'];
-            if (paidFiles.includes(fileKey) && !window.checkSession()) {
+            if (paidFiles.includes(fileKey) && !isLoggedInUser()) {
                 showPremiumLock();
                 return;
             }

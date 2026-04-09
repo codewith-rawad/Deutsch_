@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "type": "Lesen",
+      "title": "teil2",
+      "last_update": {
+        "date": "2026-04-09",
+        "changes": ["إضافة قصة جديدة في نهاية القسم"]
+      }
+    },
+    {
+      "type": "Lesen",
+      "title": "teil1",
+      "last_update": {
+        "date": "2026-04-09",
+        "changes": ["إضافة قصة سيستيان خيار الوادي"]
+      }
+    },
+    {
+      "type": "Hören",
+      "title": "teil1",
+      "last_update": {
+        "date": "2026-04-09",
+        "changes": ["تعديل خيار القسم رقم 22"]
+      }
+    }
+  ]
+}

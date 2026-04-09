@@ -252,6 +252,119 @@
             margin-bottom: 30px;
         }
 
+        .updates-standalone {
+            margin: 20px 0 35px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(6, 182, 212, 0.08));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15);
+        }
+
+        .updates-standalone::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.12), transparent 45%);
+            pointer-events: none;
+        }
+
+        .updates-standalone h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .updates-standalone p {
+            color: var(--gray-400);
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .updates-tools {
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .updates-tools input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            color: var(--light);
+            outline: none;
+        }
+
+        .updates-tools input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .updates-list {
+            display: grid;
+            gap: 10px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .update-item {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(2, 6, 23, 0.45);
+            transition: all var(--transition-normal);
+        }
+
+        .update-item:hover {
+            border-color: rgba(139, 92, 246, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(139, 92, 246, 0.16);
+        }
+
+        .update-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .update-type {
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(139, 92, 246, 0.45);
+            background: rgba(139, 92, 246, 0.25);
+            color: var(--light);
+        }
+
+        .update-date {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+        }
+
+        .update-title {
+            margin-bottom: 6px;
+            color: var(--light);
+            text-transform: capitalize;
+        }
+
+        .update-changes {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--gray-300);
+        }
+
         @keyframes rotate {
             from {
                 transform: rotate(0deg);
@@ -363,6 +476,21 @@
                 </div>
             </div>
 
+            <!-- Standalone updates section -->
+            <section class="updates-standalone" id="updatesStandaloneSection">
+                <h2>
+                    <i class="fas fa-pen-ruler"></i>
+                    <span>Latest Updates</span>
+                </h2>
+                <p>All content changes are listed here in one dedicated place.</p>
+                <div class="updates-tools">
+                    <input id="updatesSearchInput" type="text" placeholder="Search updates..." />
+                </div>
+                <div class="updates-list" id="updatesStandaloneList">
+                    <div style="color: var(--gray-400);">Loading updates...</div>
+                </div>
+            </section>
+
             <!-- تبويبات الأقسام -->
             <div class="category-tabs">
                 <button class="category-tab active" data-category="all">
@@ -455,8 +583,11 @@
                 lesenSection: document.getElementById('lesenSection'),
                 horenSection: document.getElementById('horenSection'),
                 emptyState: document.getElementById('emptyState'),
-                lastActive: document.getElementById('lastActive')
+                lastActive: document.getElementById('lastActive'),
+                updatesSearchInput: document.getElementById('updatesSearchInput'),
+                updatesStandaloneList: document.getElementById('updatesStandaloneList')
             };
+            let updatesData = [];
 
             // ========== بيانات المستخدم ==========
             const username = window.getCurrentUsername ? window.getCurrentUsername() : 'Premium User';
@@ -508,6 +639,61 @@
 
                 // تحديث الإحصائيات بعد اكتمال التحميل
                 updateStats();
+            }
+
+            function escapeHtml(value) {
+                return String(value || '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function renderUpdates(items) {
+                if (!elements.updatesStandaloneList) return;
+                if (!items.length) {
+                    elements.updatesStandaloneList.innerHTML = '<div style="color: var(--gray-400);">No matching updates found.</div>';
+                    return;
+                }
+
+                elements.updatesStandaloneList.innerHTML = items.map((item) => {
+                    const type = escapeHtml(item?.type || '-');
+                    const title = escapeHtml(item?.title || '-');
+                    const date = escapeHtml(item?.last_update?.date || '-');
+                    const changes = Array.isArray(item?.last_update?.changes) ? item.last_update.changes : [];
+                    const changesHtml = changes.length
+                        ? changes.map((c) => `<li>${escapeHtml(c)}</li>`).join('')
+                        : '<li>No change details</li>';
+
+                    return `
+                        <article class="update-item">
+                            <div class="update-head">
+                                <span class="update-type">${type}</span>
+                                <span class="update-date">${date}</span>
+                            </div>
+                            <h4 class="update-title">${title}</h4>
+                            <ul class="update-changes">${changesHtml}</ul>
+                        </article>
+                    `;
+                }).join('');
+            }
+
+            async function loadUpdatesStandalone() {
+                try {
+                    const res = await fetch('updates.json', { cache: 'no-store' });
+                    if (!res.ok) throw new Error('Failed to load updates.json');
+                    const payload = await res.json();
+                    const raw = Array.isArray(payload?.data) ? payload.data : [];
+                    updatesData = raw.slice().sort((a, b) => {
+                        const da = Date.parse(a?.last_update?.date || '');
+                        const db = Date.parse(b?.last_update?.date || '');
+                        return (Number.isNaN(db) ? 0 : db) - (Number.isNaN(da) ? 0 : da);
+                    });
+                } catch (e) {
+                    updatesData = [];
+                }
+                renderUpdates(updatesData);
             }
 
             // ========== إنشاء بطاقة قسم ==========
@@ -752,6 +938,23 @@
 
             // ========== بدأ التحميل ==========
             loadPremiumSections();
+            loadUpdatesStandalone();
+
+            if (elements.updatesSearchInput) {
+                elements.updatesSearchInput.addEventListener('input', (e) => {
+                    const q = e.target.value.trim().toLowerCase();
+                    const filtered = !q ? updatesData : updatesData.filter((item) => {
+                        const inType = String(item?.type || '').toLowerCase().includes(q);
+                        const inTitle = String(item?.title || '').toLowerCase().includes(q);
+                        const inDate = String(item?.last_update?.date || '').toLowerCase().includes(q);
+                        const inChanges = Array.isArray(item?.last_update?.changes)
+                            ? item.last_update.changes.some((c) => String(c).toLowerCase().includes(q))
+                            : false;
+                        return inType || inTitle || inDate || inChanges;
+                    });
+                    renderUpdates(filtered);
+                });
+            }
 
             // ========== حفظ حالة التبويب النشط ==========
             const savedTab = localStorage.getItem('activeDashboardTab');
