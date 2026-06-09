@@ -8,21 +8,23 @@
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="Lerne Deutsch mit MeisterQuiz - Kostenlose und Premium Übungen für Leseverstehen und Hörverstehen. Interaktive Geschichten mit Sofort-Feedback!">
+        content="Lerne Deutsch mit Rawad - Kostenlose Übungen für Leseverstehen und Hörverstehen. Interaktive Geschichten mit Sofort-Feedback!">
     <meta name="keywords"
-        content="Deutsch lernen, Leseverstehen, Hörverstehen, Deutsch Übungen,  MeisterQuiz, German learning">
+        content="Deutsch lernen, Leseverstehen, Hörverstehen, Deutsch Übungen, Rawad, German learning">
     <meta name="author" content="Rawad">
 
     <!-- Open Graph / Social Media -->
-    <meta property="og:title" content="Deutsch mit  MeisterQuiz">
+    <meta property="og:title" content="Deutsch mit Rawad">
     <meta property="og:description" content="Lerne Deutsch mit interaktiven Geschichten">
     <meta property="og:type" content="website">
+    <meta property="og:image"
+        content="https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=1200&q=80">
 
     <!-- Styles & Fonts -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Supabase -->
@@ -113,20 +115,13 @@
 </head>
 
 <body>
-    <!-- أشكال عائمة خلفية -->
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-    </div>
-
-    <!-- شريط التنقل المتطور -->
+    <!-- شريط التنقل -->
     <nav class="navbar">
         <div class="container">
             <div class="nav-content">
                 <div class="logo">
-                    <i class="fas fa-gem"></i>
-                    <span data-en=" MeisterQuiz" data-ar="تعلم الألمانية مع ">Deutsch mit MeisterQuiz</span>
+                    <i class="fas fa-graduation-cap"></i>
+                    <span data-en="Deutsch mit Rawad" data-ar="تعلّم الألمانية مع رواد">Deutsch mit Rawad</span>
                 </div>
 
                 <div class="nav-links">
@@ -134,16 +129,9 @@
                         <i class="fas fa-book-open"></i>
                         <span data-en="Free content" data-ar="المحتوى المجاني">Free content</span>
                     </a>
-                    <a href="#premium" class="nav-link">
-                        <i class="fas fa-crown"></i>
-                        <span data-en="Premium" data-ar="بريميوم">Premium</span>
-                    </a>
-                    <a href="login.html" class="btn-login">
-                        <i class="fas fa-user-astronaut"></i>
-                        <span data-en="Login" data-ar="تسجيل الدخول">Login</span>
-
-
-                        </span>
+                    <a href="#horen-section" class="nav-link">
+                        <i class="fas fa-headphones"></i>
+                        <span data-en="Listening" data-ar="السمع">Listening</span>
                     </a>
 
                 </div>
@@ -151,68 +139,106 @@
         </div>
     </nav>
 
-    <!-- قسم الترحيب الأسطوري -->
+    <!-- قسم الترحيب -->
     <section class="hero">
         <div class="container">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span class="badge-free">
-                        <i class="fas fa-star"></i>
-                        <span data-en="Start for free" data-ar="ابدأ مجاناً الآن">Start for free</span>
-                    </span>
+            <div class="hero-layout">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="badge-free">
+                            <i class="fas fa-star"></i>
+                            <span data-en="Start for free" data-ar="ابدأ مجاناً الآن">Start for free</span>
+                        </span>
+                    </div>
+
+                    <h1>
+                        <span data-en="Learn German" data-ar="تعلّم الألمانية">Learn German</span><br>
+                        <span class="glow-text" data-en="with Rawad" data-ar="مع رواد">with Rawad</span>
+                    </h1>
+
+                    <p>
+                        <span
+                            data-en="Academic exercises for reading and listening comprehension — structured, interactive, and completely free."
+                            data-ar="تمارين أكاديمية للفهم القرائي والسمعي — منظّمة وتفاعلية ومجانية بالكامل.">Academic
+                            exercises for reading and listening comprehension — structured, interactive, and completely
+                            free.</span>
+                    </p>
+
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-book-open"></i>
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label" data-en="Interactive stories" data-ar="قصة تفاعلية">Interactive
+                                stories</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-tasks"></i>
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label" data-en="Questions & tasks" data-ar="سؤال وتمرين">Questions &
+                                tasks</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label" data-en="Always available" data-ar="متاح دائماً">Always
+                                available</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-buttons">
+                        <a href="#free-content" class="btn-primary">
+                            <i class="fas fa-rocket"></i>
+                            <span data-en="Start now" data-ar="ابدأ مجاناً">Start now</span>
+                        </a>
+                        <a href="#lesen-sections" class="btn-secondary">
+                            <i class="fas fa-book"></i>
+                            <span data-en="More reading parts" data-ar="المزيد من أجزاء القراءة">More reading
+                                parts</span>
+                        </a>
+                    </div>
                 </div>
 
-                <h1>
-                    <span data-en="Learn German" data-ar="تعلّم الألمانية">Learn German</span><br>
-                    <span class="glow-text" data-en="smarter & faster" data-ar="بذكاء وسرعة">smarter & faster</span>
-                </h1>
-
-                <p>
-                    🚀 <span data-en="With our interactive exercises for reading and listening."
-                        data-ar="مع تمارين تفاعلية للفهم القرائي والسمعي">With our interactive exercises for reading and
-                        listening.</span>
-                    <br class="mobile-hide">
-                    Sofortiges Feedback & Punkte sammeln!
-                </p>
-
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <i class="fas fa-book-open"
-                            style="font-size: 1.5rem; color: var(--primary); margin-bottom: 10px;"></i>
-                        <span class="stat-number">50+</span>
-                        <span class="stat-label" data-en="Interactive stories" data-ar="قصة تفاعلية">Interactive
-                            stories</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-tasks"
-                            style="font-size: 1.5rem; color: var(--secondary); margin-bottom: 10px;"></i>
-                        <span class="stat-number">1000+</span>
-                        <span class="stat-label" data-en="Questions & tasks" data-ar="سؤال وتمرين">Questions &
-                            tasks</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-clock"
-                            style="font-size: 1.5rem; color: var(--accent); margin-bottom: 10px;"></i>
-                        <span class="stat-number">24/7</span>
-                        <span class="stat-label" data-en="Always available" data-ar="متاح دائماً">Always
-                            available</span>
+                <div class="hero-visual">
+                    <div class="hero-slider" id="heroSlider" aria-roledescription="carousel"
+                        aria-label="Deutsche Städte">
+                        <div class="hero-slider-track">
+                            <div class="hero-slide active" data-city-en="Berlin" data-city-ar="برلين">
+                                <img src="https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=900&q=80"
+                                    alt="Brandenburger Tor, Berlin" width="900" height="600" loading="eager"
+                                    decoding="async">
+                            </div>
+                           
+                            <div class="hero-slide" data-city-en="Hamburg" data-city-ar="هامبورغ">
+                                <img src="https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=900&q=80"
+                                    alt="Hamburg, Deutschland" width="900" height="600" loading="lazy"
+                                    decoding="async">
+                            </div>
+                            <div class="hero-slide" data-city-en="Köln" data-city-ar="كولونيا">
+                                <img src="https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=900&q=80"
+                                    alt="Kölner Dom, Köln" width="900" height="600" loading="lazy" decoding="async">
+                            </div>
+                            <div class="hero-slide" data-city-en="Frankfurt" data-city-ar="فرانكفورت">
+                                <img src="https://images.unsplash.com/photo-1496568816309-51d7c20e3b21?auto=format&fit=crop&w=900&q=80"
+                                    alt="Frankfurt am Main" width="900" height="600" loading="lazy"
+                                    decoding="async">
+                            </div>
+                           
+                            <div class="hero-slide" data-city-en="Dresden" data-city-ar="درسدن">
+                                <img src="https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=900&q=80"
+                                    alt="Frauenkirche, Dresden" width="900" height="600" loading="lazy"
+                                    decoding="async">
+                            </div>
+                        </div>
+                        <div class="hero-image-overlay"></div>
+                        <div class="hero-image-caption" aria-live="polite">
+                            <span class="hero-flag" aria-hidden="true">🇩🇪</span>
+                            <span id="heroCityLabel">Berlin · Deutschland</span>
+                        </div>
+                        <div class="hero-slider-dots" id="heroSliderDots" role="tablist"
+                            aria-label="Städte auswählen"></div>
                     </div>
                 </div>
-
-                <div class="hero-buttons">
-                    <a href="#free-content" class="btn-primary">
-                        <i class="fas fa-rocket"></i>
-                        <span data-en="Start now" data-ar="ابدأ مجاناً">Start now</span>
-                    </a>
-                    <a href="#premium" class="btn-secondary">
-                        <i class="fas fa-gem"></i>
-                        <span data-en="Explore Premium" data-ar="اكتشف البريميوم">Explore Premium</span>
-                    </a>
-                </div>
-
-
             </div>
-        </div>
         </div>
     </section>
 
@@ -221,68 +247,35 @@
         <div class="container">
             <div class="section-header">
                 <div class="section-icon">
-                    <i class="fas fa-book-reader" style="color: var(--primary); font-size: 3rem;"></i>
+                    <i class="fas fa-university" style="color: var(--accent); font-size: 2.75rem;"></i>
                 </div>
                 <h2>
-                    <span data-en="Reading comprehension – Part 1" data-ar="الفهم القرائي – الجزء ١">Reading
-                        comprehension – Part 1</span>
+                    <span data-en="All exercises – free & no login" data-ar="جميع التمارين – مجاناً بدون تسجيل">All
+                        exercises – free & no login</span>
                     <span class="badge-free">
                         <i class="fas fa-gift"></i>
                         <span data-en="Free" data-ar="مجاني">Free</span>
                     </span>
                 </h2>
                 <p>
-                    ✨ <span data-en="Start with these 14 free stories, no login required."
-                        data-ar="ابدأ مع هذه القصص الست مجاناً، بدون تسجيل دخول.">Start with these 6 free stories, no
-                        login required.</span>
-                    <br>
-                    <span style="color: var(--gray-400); font-size: 0.9rem;">
-                        <i class="fas fa-info-circle"></i>
-                        <span data-en="Reading parts 2–5 and all listening exercises are Premium."
-                            data-ar="الأجزاء ٢–٥ من القراءة وكل تمارين السمع ضمن البريميوم">Reading parts 2–5 and all
-                            listening exercises are Premium.</span>
-                    </span>
+                    ✨ <span data-en="Reading parts 1–5 and listening parts 1–4 – all free, no login required."
+                        data-ar="أجزاء القراءة ١–٥ وتمارين السمع ١–٤ – كلها مجانية بدون تسجيل دخول.">Reading parts 1–5
+                        and listening parts 1–4 – all free, no login required.</span>
                 </p>
             </div>
 
-            <div class="lesen-teil1-pdf-cta"
-                style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:24px;padding:14px 18px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-xl);">
-                <a href="#" class="btn-secondary lesen-pdf-download"
-                    data-pdf-url="https://qrznwrvfjacoepegjpov.supabase.co/storage/v1/object/public/teil1lesen/lesen_teil1.pdf"
-                    data-pdf-name="lesen_teil1.pdf"
-                    style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;" role="button">
-                    <i class="fas fa-file-pdf" style="color:#f87171;"></i>
-                    <span data-en="Download PDF (Reading Part 1) for study" data-ar="تحميل PDF الجزء ١ للدراسة">Download
-                        PDF (Reading Part 1) for study</span>
-                </a>
-                <span style="color:var(--gray-400);font-size:0.9rem;" data-en="Opens in a new tab or saves the file"
-                    data-ar="يفتح في تاب جديد أو يحفظ الملف">Opens in a new tab or saves the file</span>
-            </div>
+            <h3 id="lesen-sections" class="free-subsection-title" data-en="Reading comprehension – Parts 1–5"
+                data-ar="الفهم القرائي – الأجزاء ١–٥">Reading comprehension – Parts 1–5</h3>
+            <div class="exercises-grid" id="lesenSectionsGrid"></div>
 
-            <!-- شبكة القصص المجانية -->
-            <div class="stories-grid" id="freeStoriesGrid">
-                <!-- يتم التعبئة عبر JavaScript -->
-            </div>
-
-            <!-- شريط التقدم -->
-            <div class="free-progress">
-                <div class="progress-info">
-                    <span>
-                        <i class="fas fa-flag-checkered"></i>
-                        <span data-en="Your progress in the free part" data-ar="تقدّمك في الجزء المجاني">Your progress
-                            in the free part</span>
-                    </span>
-                    <span id="freeProgressText">0/6 stories</span>
-                </div>
-                <div class="viewer-progress-wrap">
-                    <div class="viewer-progress-fill" id="freeProgressBar" style="width: 0%;"></div>
-                </div>
-            </div>
+            <h3 id="horen-section" class="free-subsection-title" data-en="Listening – Parts 1–4"
+                data-ar="الفهم السمعي – الأجزاء ١–٤">Listening – Parts 1–4</h3>
+            <div class="exercises-grid" id="horenSectionsGrid"></div>
         </div>
     </section>
 
-    <!-- القسم المدفوع - Premium Showcase -->
-    <section id="premium" class="premium-section">
+    <!-- قسم التواصل (اختياري) -->
+    <section id="premium" class="premium-section" style="display: none;">
         <div class="container">
             <div class="section-header">
                 <div class="section-icon">
@@ -474,16 +467,13 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <i class="fas fa-gem"></i>
-                    <span>Deutsch mit MeisterQuiz
-
-                    </span>
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Deutsch mit Rawad</span>
                 </div>
 
                 <div class="footer-links">
                     <a href="#free-content" data-en="Free content" data-ar="المحتوى المجاني">Free content</a>
-                    <a href="#premium" data-en="Premium" data-ar="البريميوم">Premium</a>
-                    <a href="login.html" data-en="Login" data-ar="تسجيل الدخول">Login</a>
+                    <a href="#horen-section" data-en="Listening" data-ar="السمع">Listening</a>
                     <a href="#" onclick="showImpressum()" data-en="Imprint" data-ar="بيانات الناشر">Imprint</a>
                 </div>
 
@@ -500,9 +490,8 @@
                 </div>
 
                 <div class="footer-copyright">
-                    <p data-en="© 2026 Deutsch mit  MeisterQuiz · All rights reserved"
-                        data-ar="© ٢٠٢٦ تعلم الألمانية مع رواد · جميع الحقوق محفوظة">© 2026 Deutsch mit
-                        MeisterQuiz · All
+                    <p data-en="© 2026 Deutsch mit Rawad · All rights reserved"
+                        data-ar="© ٢٠٢٦ تعلّم الألمانية مع رواد · جميع الحقوق محفوظة">© 2026 Deutsch mit Rawad · All
                         rights reserved</p>
                     <p class="made-with">
                         Mit <i class="fas fa-heart" style="color: var(--danger);"></i> gemacht für dich
@@ -544,14 +533,136 @@
             }
 
             localStorage.setItem('ui_lang', window.currentLang);
+
+            if (typeof window.updateHeroSliderCaption === 'function') {
+                window.updateHeroSliderCaption();
+            }
+        }
+
+        function initHeroSlider() {
+            const slider = document.getElementById('heroSlider');
+            const dotsWrap = document.getElementById('heroSliderDots');
+            const cityLabel = document.getElementById('heroCityLabel');
+            if (!slider || !dotsWrap) return;
+
+            const slides = Array.from(slider.querySelectorAll('.hero-slide'));
+            if (!slides.length) return;
+
+            let current = 0;
+            let timer = null;
+            const intervalMs = 4500;
+
+            function countrySuffix() {
+                return window.currentLang === 'ar' ? 'ألمانيا' : 'Deutschland';
+            }
+
+            function cityName(slide) {
+                if (!slide) return '';
+                return window.currentLang === 'ar'
+                    ? slide.getAttribute('data-city-ar')
+                    : slide.getAttribute('data-city-en');
+            }
+
+            window.updateHeroSliderCaption = function () {
+                const slide = slides[current];
+                if (cityLabel && slide) {
+                    cityLabel.textContent = cityName(slide) + ' · ' + countrySuffix();
+                }
+            };
+
+            function goTo(index) {
+                current = (index + slides.length) % slides.length;
+                slides.forEach(function (s, i) {
+                    s.classList.toggle('active', i === current);
+                });
+                dotsWrap.querySelectorAll('.hero-slider-dot').forEach(function (dot, i) {
+                    dot.classList.toggle('active', i === current);
+                    dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+                });
+                window.updateHeroSliderCaption();
+            }
+
+            function next() {
+                nextVisible(1);
+            }
+
+            function startAuto() {
+                stopAuto();
+                timer = setInterval(next, intervalMs);
+            }
+
+            function stopAuto() {
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+            }
+
+            dotsWrap.innerHTML = '';
+            slides.forEach(function (slide, i) {
+                const img = slide.querySelector('img');
+                if (img) {
+                    img.addEventListener('error', function () {
+                        slide.classList.add('slide-broken');
+                    });
+                }
+
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'hero-slider-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('role', 'tab');
+                dot.setAttribute('aria-label', cityName(slide) || ('Slide ' + (i + 1)));
+                dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+                dot.addEventListener('click', function () {
+                    goTo(i);
+                    startAuto();
+                });
+                dotsWrap.appendChild(dot);
+            });
+
+            function nextVisible(delta) {
+                if (slides.length < 2) return;
+                let steps = 0;
+                let idx = current;
+                do {
+                    idx = (idx + delta + slides.length) % slides.length;
+                    steps++;
+                } while (slides[idx].classList.contains('slide-broken') && steps < slides.length);
+                if (!slides[idx].classList.contains('slide-broken')) goTo(idx);
+            }
+
+            slider.addEventListener('mouseenter', stopAuto);
+            slider.addEventListener('mouseleave', startAuto);
+            slider.addEventListener('focusin', stopAuto);
+            slider.addEventListener('focusout', startAuto);
+
+            window.updateHeroSliderCaption();
+            startAuto();
         }
 
         document.addEventListener('DOMContentLoaded', async function () {
+            initHeroSlider();
             // تهيئة المتغيرات
-            const grid = document.getElementById('freeStoriesGrid');
+            const lesenSectionsGrid = document.getElementById('lesenSectionsGrid');
+            const horenSectionsGrid = document.getElementById('horenSectionsGrid');
             const visitorSpan = document.getElementById('visitorCount');
-            const freeProgressBar = document.getElementById('freeProgressBar');
-            const freeProgressText = document.getElementById('freeProgressText');
+
+            const freeSectionFiles = {
+                lesen: ['lesen1', 'lesen2', 'lesen3', 'lesen4', 'lesen5'],
+                horen: ['horen1', 'horen2', 'horen3', 'horen4']
+            };
+
+            const sectionMeta = {
+                lesen1: { icon: 'fa-book-open', label: 'Teil 1', title: 'Leseverstehen Teil 1' },
+                lesen2: { icon: 'fa-question-circle', label: 'Teil 2', title: 'Leseverstehen Teil 2' },
+                lesen3: { icon: 'fa-puzzle-piece', label: 'Teil 3', title: 'Leseverstehen Teil 3' },
+                lesen4: { icon: 'fa-check-double', label: 'Teil 4', title: 'Leseverstehen Teil 4' },
+                lesen5: { icon: 'fa-scroll', label: 'Teil 5', title: 'Leseverstehen Teil 5' },
+                horen1: { icon: 'fa-headphones', label: 'Teil 1', title: 'Hörverstehen Teil 1' },
+                horen2: { icon: 'fa-phone', label: 'Teil 2', title: 'Hörverstehen Teil 2' },
+                horen3: { icon: 'fa-book-reader', label: 'Teil 3', title: 'Hörverstehen Teil 3' },
+                horen4: { icon: 'fa-users', label: 'Teil 4', title: 'Hörverstehen Teil 4' }
+            };
 
             // إحصائيات الزوار
             async function updateVisitorCount() {
@@ -566,142 +677,102 @@
                 }
             }
 
-            // تحميل القصص
-            async function loadFreeStories() {
-                if (!grid) return;
+            function getSectionDescription(fileKey, data) {
+                if (!data) return 'Laden fehlgeschlagen';
+                if (data.sections) {
+                    const count = data.sections.length;
+                    return `${count} ${count === 1 ? 'Teil' : 'Teile'}`;
+                }
+                if (Array.isArray(data)) {
+                    const count = data.length;
+                    return `${count} ${count === 1 ? 'Übung' : 'Übungen'}`;
+                }
+                return 'Übungen öffnen';
+            }
 
-                // عرض حالة التحميل
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
-                        <div class="spinner"></div>
-                        <p style="margin-top: 20px; color: var(--gray-400);">
-                            Lade Geschichten...
-                        </p>
+            function createFreeSectionCard(fileKey, data, category) {
+                const meta = sectionMeta[fileKey] || { icon: 'fa-book', label: fileKey, title: category };
+                const card = document.createElement('div');
+                card.className = 'story-card section-entry-card';
+                const title = meta.title || (data && data.name) || `${category} ${meta.label}`;
+                const description = getSectionDescription(fileKey, data);
+
+                card.innerHTML = `
+                    <div class="story-icon">
+                        <i class="fas ${meta.icon}"></i>
+                    </div>
+                    <h3>${title}</h3>
+                    <p>
+                        <i class="fas fa-tasks"></i>
+                        ${description}
+                    </p>
+                    <div class="story-footer">
+                        <span class="story-badge">
+                            <i class="fas fa-unlock"></i>
+                            Kostenlos
+                        </span>
+                        <button class="btn-start" type="button">
+                            <span>Öffnen</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
                     </div>
                 `;
 
-                const data = await window.loadQuestionsFile('lesen1');
-
-                if (data && Array.isArray(data)) {
-                    grid.innerHTML = '';
-
-                    // تحديث التقدم
-                    updateProgress(data.length);
-
-                    let cursor = 0;
-                    const chunkSize = 4;
-                    const appendChunk = () => {
-                        const frag = document.createDocumentFragment();
-                        const end = Math.min(cursor + chunkSize, data.length);
-                        for (let index = cursor; index < end; index++) {
-                            const story = data[index];
-                            const isCompleted = localStorage.getItem(`story_free_${index}_completed`) === 'true';
-                            const icon = getStoryIcon(story.title);
-
-                            const card = document.createElement('div');
-                            card.className = `story-card ${isCompleted ? 'completed' : ''}`;
-                            card.setAttribute('data-index', index);
-
-                            card.innerHTML = `
-                                <div class="story-icon">
-                                    <i class="fas ${icon}"></i>
-                                </div>
-                                <h3>${story.title || 'Geschichte ' + (index + 1)}</h3>
-                                <p>
-                                    <i class="fas fa-question-circle"></i>
-                                    ${story.questions ? story.questions.length : 0} Fragen
-                                </p>
-                                <div class="story-footer">
-                                    <span class="story-badge">
-                                        <i class="fas fa-star"></i>
-                                        Kostenlos
-                                    </span>
-                                    <button class="btn-start" data-index="${index}">
-                                        <span>Starten</span>
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </div>
-                                ${isCompleted ? '<div class="completed-badge"><i class="fas fa-check-circle"></i></div>' : ''}
-                            `;
-
-                            const btn = card.querySelector('.btn-start');
-                            if (btn) {
-                                btn.addEventListener('click', (e) => {
-                                    e.stopPropagation();
-                                    startStory(story, index);
-                                });
-                            }
-
-                            frag.appendChild(card);
-                        }
-                        grid.appendChild(frag);
-                        cursor = end;
-                        if (cursor < data.length) requestAnimationFrame(appendChunk);
-                    };
-                    requestAnimationFrame(appendChunk);
-                } else {
-                    grid.innerHTML = `
-                        <div class="error-message">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Die Geschichten konnten nicht geladen werden.
-                            <button onclick="location.reload()" class="btn-secondary" style="margin-top: 15px;">
-                                <i class="fas fa-redo"></i> Neu laden
-                            </button>
-                        </div>
-                    `;
-                }
-            }
-
-            // أيقونة لكل قصة
-            function getStoryIcon(title) {
-                const icons = {
-                    'Die Nachbarin': 'fa-user-friends',
-                    'Im Wald': 'fa-tree',
-                    'Handy verloren': 'fa-mobile-alt',
-                    'Das Fahrrad': 'fa-bicycle',
-                    'Steffi': 'fa-user-tie',
-                    'Japan': 'fa-flag'
+                const openSection = () => {
+                    window.location.href = `viewer.html?file=${fileKey}`;
                 };
 
-                for (let key in icons) {
-                    if (title?.includes(key)) return icons[key];
+                card.addEventListener('click', openSection);
+                const btn = card.querySelector('.btn-start');
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openSection();
+                    });
                 }
-                return 'fa-book-open';
+
+                return card;
             }
 
-            // بدأ القصة
-            function startStory(story, index) {
-                // حفظ التقدم
-                sessionStorage.setItem('currentStory', JSON.stringify(story));
-                window.location.href = `viewer.html?file=lesen1&index=${index}`;
+            function showSectionsLoading(targetGrid) {
+                if (!targetGrid) return;
+                targetGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <div class="spinner"></div>
+                    </div>
+                `;
             }
 
-            // تحديث شريط التقدم
-            function updateProgress(totalStories) {
-                let completed = 0;
-                for (let i = 0; i < totalStories; i++) {
-                    if (localStorage.getItem(`story_free_${i}_completed`) === 'true') {
-                        completed++;
-                    }
+            async function loadFreeSections() {
+                if (lesenSectionsGrid) showSectionsLoading(lesenSectionsGrid);
+                if (horenSectionsGrid) showSectionsLoading(horenSectionsGrid);
+
+                const lesenPromises = freeSectionFiles.lesen.map(async (fileKey) => {
+                    const data = await window.loadQuestionsFile(fileKey);
+                    return { fileKey, data, category: 'Lesen' };
+                });
+                const horenPromises = freeSectionFiles.horen.map(async (fileKey) => {
+                    const data = await window.loadQuestionsFile(fileKey);
+                    return { fileKey, data, category: 'Hören' };
+                });
+
+                const lesenResults = await Promise.all(lesenPromises);
+                const horenResults = await Promise.all(horenPromises);
+
+                if (lesenSectionsGrid) {
+                    lesenSectionsGrid.innerHTML = '';
+                    lesenResults.forEach(({ fileKey, data, category }) => {
+                        lesenSectionsGrid.appendChild(createFreeSectionCard(fileKey, data, category));
+                    });
                 }
 
-                const percentage = (completed / totalStories) * 100;
-                if (freeProgressBar) {
-                    freeProgressBar.style.width = `${percentage}%`;
-                }
-                if (freeProgressText) {
-                    freeProgressText.textContent = `${completed}/${totalStories} Geschichten`;
+                if (horenSectionsGrid) {
+                    horenSectionsGrid.innerHTML = '';
+                    horenResults.forEach(({ fileKey, data, category }) => {
+                        horenSectionsGrid.appendChild(createFreeSectionCard(fileKey, data, category));
+                    });
                 }
             }
-
-
-            // تحديث التقدم عند العودة من المشاهد (باستخدام الكاش لو موجود)
-            window.addEventListener('focus', async () => {
-                const data = await window.loadQuestionsFile('lesen1');
-                if (data && Array.isArray(data)) {
-                    updateProgress(data.length);
-                }
-            });
 
             // Toast Nachricht
             window.showToast = function (message, type = 'info') {
@@ -725,16 +796,16 @@
 
             // Impressum
             window.showImpressum = function () {
-                alert('Deutsch mit  MeisterQuiz\nKontakt: @mez123794\nAlle Rechte vorbehalten.');
+                alert('Deutsch mit Rawad\nKontakt: @mez123794\nAlle Rechte vorbehalten.');
             };
 
             // بدأ التحميل
             await updateVisitorCount();
-            await loadFreeStories();
+            await loadFreeSections();
 
             // عرض ترحيب
             setTimeout(() => {
-                showToast('👋 Willkommen bei Deutsch mit MeisterQuiz', 'info');
+                showToast('👋 Willkommen bei Deutsch mit Rawad', 'info');
             }, 1000);
 
             // تطبيق اللغة المحفوظة
@@ -757,31 +828,6 @@
             margin-bottom: 20px;
         }
 
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 40px 0;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            display: block;
-            font-family: var(--font-display);
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-label {
-            color: var(--gray-400);
-            font-size: 0.9rem;
-        }
 
         .hero-features {
             display: flex;
@@ -798,19 +844,13 @@
             color: var(--gray-300);
         }
 
-        .free-progress {
-            margin-top: 40px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .section-entry-card {
+            cursor: pointer;
         }
 
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            color: var(--gray-400);
+        .hero h1 .glow-text {
+            color: var(--accent);
+            -webkit-text-fill-color: var(--accent);
         }
 
         .premium-features {
@@ -932,7 +972,12 @@
         }
 
         .badge-free {
-            color: black !important;
+            color: var(--dark-950) !important;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+        }
+
+        .footer-logo i {
+            color: var(--accent);
         }
 
         .footer-content {
