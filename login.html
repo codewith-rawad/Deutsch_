@@ -15,9 +15,6 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         /* تنسيقات خاصة بصفحة الدخول */
         .login-body {
@@ -473,16 +470,15 @@
                 </ul>
 
                 <div class="teaser-cta">
-                    <p data-en="👋 Contact us on Telegram:" data-ar="👋 تواصل معنا عبر تيليغرام:">👋 Contact us on
-                        Telegram:</p>
+                    <p data-en="👋 Contact the group admin for a free account:" data-ar="👋 تواصل مع أدمن المجموعة للحصول على حساب مجاني:">👋 Contact the group admin for a free account:</p>
                     <a href="https://t.me/mez123794" target="_blank" class="telegram-btn">
                         <i class="fab fa-telegram"></i>
                         @mez123794
                     </a>
                     <p style="margin-top: 20px; font-size: 0.9rem;"
-                        data-en="⚡ One-time payment – you will receive your login details after payment."
-                        data-ar="⚡ دفعة واحدة – بعد الدفع تصلك بيانات الدخول">
-                        ⚡ One-time payment – you will receive your login details after payment.
+                        data-en="⚠️ This site was stolen before — only official accounts work here."
+                        data-ar="⚠️ تم سرقة الموقع سابقاً — الحسابات الرسمية فقط تعمل هنا.">
+                        ⚠️ This site was stolen before — only official accounts work here.
                     </p>
                 </div>
             </div>
@@ -490,8 +486,33 @@
     </div>
 
     <!-- Scripts -->
-    <script src="supabase.js"></script>
     <script>
+        window.checkSession = function () {
+            return sessionStorage.getItem('logged_in') === 'true';
+        };
+
+        let allowedUsers = [];
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('users.json');
+                if (!response.ok) throw new Error('Failed to load users');
+                const data = await response.json();
+                allowedUsers = Array.isArray(data.users) ? data.users : [];
+            } catch (err) {
+                console.error('Could not load users.json:', err);
+                allowedUsers = [];
+            }
+        }
+
+        function validateLogin(username, password) {
+            const normalizedUsername = username.trim().toLowerCase();
+            return allowedUsers.some(function (user) {
+                return user.username.toLowerCase() === normalizedUsername &&
+                    user.password === password;
+            });
+        }
+
         // لغة الواجهة (مشتركة مع الصفحة الرئيسية)
         window.currentLang = localStorage.getItem('ui_lang') || 'en';
 
@@ -507,7 +528,9 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
+            await loadUsers();
+
             // ========== عناصر النموذج ==========
             const form = document.getElementById('loginForm');
             const username = document.getElementById('loginUsername');
@@ -554,8 +577,7 @@
 
             // ========== التحقق من الجلسة الحالية ==========
             if (window.checkSession && window.checkSession()) {
-                // إذا كان هناك جلسة نشطة، انتقل إلى لوحة التحكم
-                window.location.href = 'dashboard.html';
+                window.location.href = 'index.html';
                 return;
             }
 
@@ -577,11 +599,10 @@
                         return;
                     }
 
-                    // التحقق من وجود دالة loginUser
-                    if (typeof window.loginUser !== 'function') {
+                    if (allowedUsers.length === 0) {
                         showError(window.currentLang === 'ar'
-                            ? '❌ خطأ في النظام، الرجاء إعادة تحميل الصفحة (F5).'
-                            : '❌ System error, please reload the page (F5).');
+                            ? '❌ تعذّر تحميل قائمة المستخدمين. أعد تحميل الصفحة.'
+                            : '❌ Could not load user list. Please reload the page.');
                         return;
                     }
 
@@ -591,38 +612,24 @@
                         ? '<i class="fas fa-spinner fa-spin"></i> يتم التحقق...'
                         : '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
-                    try {
-                        // محاولة تسجيل الدخول
-                        const result = await window.loginUser(usernameVal, passwordVal);
+                    await new Promise(function (resolve) { setTimeout(resolve, 400); });
 
-                        if (result && result.success) {
-                            // حفظ اسم المستخدم
-                            localStorage.setItem('currentUsername', usernameVal);
+                    if (validateLogin(usernameVal, passwordVal)) {
+                        sessionStorage.setItem('logged_in', 'true');
+                        sessionStorage.setItem('username', usernameVal.trim());
+                        localStorage.setItem('currentUsername', usernameVal.trim());
 
-                            // رسالة نجاح قصيرة
-                            showSuccess(window.currentLang === 'ar'
-                                ? '✓ تم تسجيل الدخول بنجاح، جارٍ التحويل ...'
-                                : '✓ Login successful, redirecting ...');
+                        showSuccess(window.currentLang === 'ar'
+                            ? '✓ تم تسجيل الدخول بنجاح، جارٍ التحويل ...'
+                            : '✓ Login successful, redirecting ...');
 
-                            // التوجيه إلى لوحة التحكم
-                            setTimeout(() => {
-                                window.location.href = 'dashboard.html';
-                            }, 500);
-                        } else {
-                            // عرض رسالة الخطأ
-                            const errorMsg = result && result.message
-                                ? result.message
-                                : (window.currentLang === 'ar'
-                                    ? '❌ اسم المستخدم أو كلمة المرور غير صحيحة.'
-                                    : '❌ Incorrect username or password.');
-                            showError(errorMsg);
-                            resetButton();
-                        }
-                    } catch (err) {
-                        console.error('Login error:', err);
+                        setTimeout(function () {
+                            window.location.href = 'index.html';
+                        }, 500);
+                    } else {
                         showError(window.currentLang === 'ar'
-                            ? '❌ خطأ في الاتصال، حاول مرة أخرى لاحقاً.'
-                            : '❌ Connection error, please try again later.');
+                            ? '❌ اسم المستخدم أو كلمة المرور غير صحيحة.'
+                            : '❌ Incorrect username or password.');
                         resetButton();
                     }
                 });

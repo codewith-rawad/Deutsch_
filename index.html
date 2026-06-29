@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Lora:ital,wght@0,400;0,600;0,700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Supabase -->
@@ -111,10 +111,235 @@
             stroke-linecap: round;
             transition: stroke-dashoffset 0.5s ease;
         }
+
+        .site-warning-banner {
+            display: none;
+        }
+
+        .login-gate {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(239, 68, 68, 0.18), transparent 45%),
+                radial-gradient(circle at 80% 80%, rgba(249, 115, 22, 0.15), transparent 40%),
+                var(--dark-950);
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .login-gate[hidden] {
+            display: none !important;
+        }
+
+        .login-gate-card {
+            width: 100%;
+            max-width: 620px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 2px solid rgba(239, 68, 68, 0.45);
+            border-radius: var(--radius-2xl);
+            padding: 40px 36px;
+            box-shadow: 0 24px 80px rgba(239, 68, 68, 0.15), var(--shadow-2xl);
+            text-align: center;
+            animation: gatePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes gatePulse {
+            0%, 100% { box-shadow: 0 24px 80px rgba(239, 68, 68, 0.15), var(--shadow-2xl); }
+            50% { box-shadow: 0 24px 90px rgba(239, 68, 68, 0.28), var(--shadow-2xl); }
+        }
+
+        .login-gate-icon {
+            font-size: 4rem;
+            color: #fbbf24;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.5));
+        }
+
+        .login-gate-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fef2f2;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .login-gate-message {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fecaca;
+            line-height: 1.9;
+            margin-bottom: 12px;
+        }
+
+        .login-gate-note {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fca5a5;
+            margin-bottom: 28px;
+            line-height: 1.8;
+        }
+
+        .login-gate-form {
+            text-align: right;
+            margin-bottom: 24px;
+        }
+
+        .login-gate-field {
+            margin-bottom: 16px;
+        }
+
+        .login-gate-field label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--gray-300);
+            margin-bottom: 8px;
+        }
+
+        .login-gate-field input {
+            width: 100%;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            color: var(--light);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .login-gate-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-gate-submit {
+            width: 100%;
+            padding: 16px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-full);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .login-gate-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px var(--purple-glow);
+        }
+
+        .login-gate-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-gate-error {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: var(--radius-lg);
+            color: #fecaca;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .login-gate-telegram {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: var(--radius-full);
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 1.05rem;
+            font-weight: 700;
+            transition: background 0.2s ease;
+        }
+
+        .login-gate-telegram:hover {
+            background: rgba(37, 99, 235, 0.25);
+        }
+
+        .site-content[hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .login-gate-card {
+                padding: 28px 20px;
+            }
+
+            .login-gate-title {
+                font-size: 1.55rem;
+            }
+
+            .login-gate-message {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- شاشة الحجب — تظهر قبل تسجيل الدخول -->
+    <div id="loginGate" class="login-gate">
+        <div class="login-gate-card">
+            <div class="login-gate-icon" aria-hidden="true">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1 class="login-gate-title">⚠️ الموقع الأصلي مغلق مؤقتاً</h1>
+            <p class="login-gate-message">
+                تم سرقة هذا الموقع سابقاً من قبل بعض المجموعات.<br>
+                لذلك تم إخفاء كل المحتوى والتمارين حتى تسجيل الدخول.
+            </p>
+            <p class="login-gate-note">
+                للحصول على حساب <strong>مجاني</strong> — تواصل مع أدمن المجموعة،<br>
+                ثم سجّل دخولك بالبيانات التي يعطيك إياها.
+            </p>
+
+            <form id="gateLoginForm" class="login-gate-form">
+                <div class="login-gate-field">
+                    <label for="gateUsername">اسم المستخدم</label>
+                    <input type="text" id="gateUsername" autocomplete="username" required>
+                </div>
+                <div class="login-gate-field">
+                    <label for="gatePassword">كلمة المرور</label>
+                    <input type="password" id="gatePassword" autocomplete="current-password" required>
+                </div>
+                <button type="submit" id="gateLoginBtn" class="login-gate-submit">
+                    <i class="fas fa-unlock"></i>
+                    <span>فتح الموقع</span>
+                </button>
+                <div id="gateLoginError" class="login-gate-error"></div>
+            </form>
+
+            <a href="https://t.me/mez123794" target="_blank" class="login-gate-telegram">
+                <i class="fab fa-telegram"></i>
+                تواصل مع الأدمن عبر تيليغرام
+            </a>
+        </div>
+    </div>
+
+    <!-- المحتوى الكامل — يظهر بعد تسجيل الدخول فقط -->
+    <div id="siteContent" class="site-content" hidden>
+
     <!-- شريط التنقل -->
     <nav class="navbar">
         <div class="container">
@@ -133,6 +358,10 @@
                         <i class="fas fa-headphones"></i>
                         <span data-en="Listening" data-ar="السمع">Listening</span>
                     </a>
+                    <button type="button" class="nav-link" onclick="siteLogout()" style="background:none;border:none;cursor:pointer;font:inherit;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span data-en="Logout" data-ar="تسجيل الخروج">Logout</span>
+                    </button>
 
                 </div>
             </div>
@@ -301,7 +530,7 @@
                         Beliebt
                     </div>
                     <div class="premium-icon">
-                        <i class="fas fa-book"></i>
+                        <!-- <i class="fas fa-book"></i> -->
                     </div>
                     <h3 data-en="Reading – Parts 2–5" data-ar="الفهم القرائي – الأجزاء ٢–٥">Reading – Parts 2–5</h3>
                     <p data-en="📚 Four additional parts with over 40 exercises"
@@ -501,6 +730,8 @@
         </div>
     </footer>
 
+    </div><!-- /siteContent -->
+
     <!-- Toast Notifications -->
     <div id="toastNotification" class="toast-notification">
         <i id="toastIcon" class="fas fa-info-circle"></i>
@@ -510,6 +741,104 @@
     <!-- JavaScript -->
     <script src="supabase.js"></script>
     <script>
+        let gateAllowedUsers = [];
+        let siteInitialized = false;
+
+        function isSiteLoggedIn() {
+            return sessionStorage.getItem('logged_in') === 'true';
+        }
+
+        async function loadGateUsers() {
+            try {
+                const response = await fetch('users.json');
+                if (!response.ok) throw new Error('Failed to load users');
+                const data = await response.json();
+                gateAllowedUsers = Array.isArray(data.users) ? data.users : [];
+            } catch (err) {
+                console.error('Could not load users.json:', err);
+                gateAllowedUsers = [];
+            }
+        }
+
+        function validateGateLogin(username, password) {
+            const normalizedUsername = username.trim().toLowerCase();
+            return gateAllowedUsers.some(function (user) {
+                return user.username.toLowerCase() === normalizedUsername &&
+                    user.password === password;
+            });
+        }
+
+        function unlockSite() {
+            const gate = document.getElementById('loginGate');
+            const content = document.getElementById('siteContent');
+            if (gate) gate.hidden = true;
+            if (content) content.hidden = false;
+        }
+
+        function lockSite() {
+            const gate = document.getElementById('loginGate');
+            const content = document.getElementById('siteContent');
+            if (gate) gate.hidden = false;
+            if (content) content.hidden = true;
+        }
+
+        function initGateLogin() {
+            const form = document.getElementById('gateLoginForm');
+            const usernameInput = document.getElementById('gateUsername');
+            const passwordInput = document.getElementById('gatePassword');
+            const submitBtn = document.getElementById('gateLoginBtn');
+            const errorDiv = document.getElementById('gateLoginError');
+
+            if (!form) return;
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const usernameVal = usernameInput.value.trim();
+                const passwordVal = passwordInput.value.trim();
+
+                if (!usernameVal || !passwordVal) {
+                    errorDiv.textContent = '❌ الرجاء إدخال اسم المستخدم وكلمة المرور.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                if (gateAllowedUsers.length === 0) {
+                    errorDiv.textContent = '❌ تعذّر تحميل قائمة المستخدمين. أعد تحميل الصفحة.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>جاري التحقق...</span>';
+
+                await new Promise(function (resolve) { setTimeout(resolve, 400); });
+
+                if (validateGateLogin(usernameVal, passwordVal)) {
+                    sessionStorage.setItem('logged_in', 'true');
+                    sessionStorage.setItem('username', usernameVal);
+                    localStorage.setItem('currentUsername', usernameVal);
+                    unlockSite();
+                    if (!siteInitialized) {
+                        await startSite();
+                    }
+                } else {
+                    errorDiv.textContent = '❌ اسم المستخدم أو كلمة المرور غير صحيحة.';
+                    errorDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-unlock"></i><span>فتح الموقع</span>';
+                }
+            });
+        }
+
+        window.siteLogout = function () {
+            sessionStorage.removeItem('logged_in');
+            sessionStorage.removeItem('username');
+            localStorage.removeItem('currentUsername');
+            lockSite();
+            window.scrollTo(0, 0);
+        };
+
         // إعداد اللغة والثيم
         window.currentLang = localStorage.getItem('ui_lang') || 'en';
 
@@ -641,6 +970,19 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function () {
+            await loadGateUsers();
+            initGateLogin();
+
+            if (isSiteLoggedIn()) {
+                unlockSite();
+                await startSite();
+            }
+        });
+
+        async function startSite() {
+            if (siteInitialized) return;
+            siteInitialized = true;
+
             initHeroSlider();
             // تهيئة المتغيرات
             const lesenSectionsGrid = document.getElementById('lesenSectionsGrid');
@@ -819,7 +1161,7 @@
                 });
             }
 
-        });
+        }
     </script>
 
     <style>
