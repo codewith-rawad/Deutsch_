@@ -298,45 +298,29 @@
 </head>
 
 <body>
-    <!-- شاشة الحجب — تظهر قبل تسجيل الدخول -->
-    <div id="loginGate" class="login-gate">
-        <div class="login-gate-card">
-            <div class="login-gate-icon" aria-hidden="true">
-                <i class="fas fa-shield-alt"></i>
-            </div>
-            <h1 class="login-gate-title">الموقع الأصلي متوافر  </h1>
-            <p class="login-gate-message">
-                تم سرقة هذا الموقع سابقاً من قبل بعض المجموعات.<br>
-                لذلك تم إخفاء كل المحتوى والتمارين حتى تسجيل الدخول.
-            </p>
-            <p class="login-gate-note">
-                للحصول على حساب <strong>مجاني</strong> — تواصل مع أدمن المجموعة،<br>
-                ثم سجّل دخولك بالبيانات التي يعطيك إياها.
-            </p>
-
-            <form id="gateLoginForm" class="login-gate-form">
-                <div class="login-gate-field">
-                    <label for="gateUsername">اسم المستخدم</label>
-                    <input type="text" id="gateUsername" autocomplete="username" required>
-                </div>
-                <div class="login-gate-field">
-                    <label for="gatePassword">كلمة المرور</label>
-                    <input type="password" id="gatePassword" autocomplete="current-password" required>
-                </div>
-                <button type="submit" id="gateLoginBtn" class="login-gate-submit">
-                    <i class="fas fa-unlock"></i>
-                    <span>فتح الموقع</span>
-                </button>
-                <div id="gateLoginError" class="login-gate-error"></div>
-            </form>
-
-            <a href="https://t.me/mez123794" target="_blank" class="login-gate-telegram">
-                <i class="fab fa-telegram"></i>
-                تواصل مع الأدمن عبر تيليغرام
-            </a>
+ <div id="loginGate" class="login-gate">
+    <div class="login-gate-card">
+        <div class="login-gate-icon" aria-hidden="true">
+            <i class="fas fa-shield-alt"></i>
         </div>
-    </div>
+        <h1 class="login-gate-title">🔔 الموقع طرأ عليه عدة تغييرات</h1>
+        <p class="login-gate-message">
+            تم تحديث الموقع بالكامل وأصبح له <strong>رابط جديد</strong>.<br>
+            يرجى التواصل مع الأدمن للحصول على الرابط الجديد وللاستفسار عن أي تفاصيل.
+        </p>
+        <p class="login-gate-note">
+            للحصول على الرابط الجديد أو لأي استفسار —<br>
+            تواصل مع أدمن المجموعة عبر التيليغرام.
+        </p>
 
+        <!-- تم إزالة نموذج تسجيل الدخول بالكامل -->
+
+        <a href="https://t.me/mez123794" target="_blank" class="login-gate-telegram">
+            <i class="fab fa-telegram"></i>
+            تواصل مع الأدمن عبر تيليغرام
+        </a>
+    </div>
+</div>
     <!-- المحتوى الكامل — يظهر بعد تسجيل الدخول فقط -->
     <div id="siteContent" class="site-content" hidden>
 
