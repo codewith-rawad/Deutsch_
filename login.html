@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="de" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login · Deutsch mit Rawad
-        
-    </title>
+    <title>Anmelden · Deutsch mit Rawad</title>
 
     <!-- Styles & Fonts -->
     <link rel="stylesheet" href="style.css">
@@ -16,62 +14,149 @@
         rel="stylesheet">
 
     <style>
-        /* تنسيقات خاصة بصفحة الدخول */
-        .login-body {
+        /* ===== GLOBAL RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark-950: #0b0e1a;
+            --light: #f0f3fa;
+            --gray-200: #c8d0e6;
+            --gray-300: #a8b2d1;
+            --gray-400: #7b89b0;
+            --gray-500: #5b6990;
+            --gray-600: #3c4a70;
+            --primary: #7c6af0;
+            --secondary: #f97316;
+            --accent: #06b6d4;
+            --success: #34d399;
+            --success-light: #6ee7b7;
+            --danger-light: #fca5a5;
+            --purple-glow: rgba(124, 106, 240, 0.4);
+            --radius-full: 60px;
+            --radius-lg: 20px;
+            --radius-2xl: 32px;
+            --shadow-2xl: 0 30px 60px rgba(0, 0, 0, 0.6);
+            --shadow-glow-strong: 0 0 50px rgba(124, 106, 240, 0.25);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark-950);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--dark-950);
             position: relative;
             overflow: hidden;
+            padding: 20px;
         }
 
-        .login-body::before {
+        /* ===== ANIMATED BACKGROUND ===== */
+        body::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle,
-                    rgba(139, 92, 246, 0.2) 0%,
-                    rgba(249, 115, 22, 0.2) 25%,
-                    rgba(6, 182, 212, 0.2) 50%,
-                    transparent 70%);
-            animation: rotate 30s linear infinite;
+            background: radial-gradient(circle at 30% 40%, rgba(124, 106, 240, 0.25) 0%, rgba(249, 115, 22, 0.15) 30%, rgba(6, 182, 212, 0.15) 60%, transparent 80%);
+            animation: rotateBg 40s linear infinite;
             z-index: 0;
         }
 
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
+        @keyframes rotateBg {
+            0% {
+                transform: rotate(0deg) scale(1);
             }
-
-            to {
-                transform: rotate(360deg);
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
             }
         }
 
+        /* ===== FLOATING ICONS ===== */
+        .floating-icon {
+            position: absolute;
+            font-size: 2.4rem;
+            color: rgba(255, 255, 255, 0.04);
+            z-index: 0;
+            animation: floatIcon 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .floating-icon-1 {
+            top: 8%;
+            left: 6%;
+            animation-delay: 0s;
+        }
+        .floating-icon-2 {
+            bottom: 12%;
+            right: 8%;
+            animation-delay: 2.5s;
+        }
+        .floating-icon-3 {
+            top: 25%;
+            right: 12%;
+            animation-delay: 5s;
+        }
+        .floating-icon-4 {
+            bottom: 30%;
+            left: 10%;
+            animation-delay: 1.2s;
+        }
+
+        @keyframes floatIcon {
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-25px) rotate(8deg);
+                opacity: 0.7;
+            }
+        }
+
+        /* ===== LOGIN WRAPPER ===== */
         .login-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            width: 100%;
             max-width: 1200px;
-            margin: 20px;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(139, 92, 246, 0.2);
+            width: 100%;
+            background: rgba(11, 14, 26, 0.75);
+            backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(124, 106, 240, 0.2);
             border-radius: var(--radius-2xl);
             overflow: hidden;
             box-shadow: var(--shadow-2xl), var(--shadow-glow-strong);
             position: relative;
-            z-index: 1;
-            animation: modalSlideIn 0.6s ease;
+            z-index: 2;
+            animation: modalSlide 0.7s ease;
         }
 
+        @keyframes modalSlide {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* ===== LEFT PANEL ===== */
         .login-left {
-            padding: 60px 40px;
+            padding: 60px 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -84,97 +169,126 @@
 
         .login-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 44px;
         }
 
-        .login-header i {
-            font-size: 4rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+        .login-header .brand-icon {
+            font-size: 3.6rem;
+            background: linear-gradient(145deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            animation: float 3s ease infinite;
+            display: inline-block;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 8px 20px rgba(124, 106, 240, 0.3));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
         }
 
         .login-header h2 {
             font-family: var(--font-display);
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 800;
-            margin-bottom: 10px;
             color: var(--light);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
         }
 
-        .login-header p {
+        .login-header h2 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header .subhead {
             color: var(--gray-400);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
         }
 
+        /* ===== FORM ===== */
         .login-form {
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .input-group {
             position: relative;
-            margin-bottom: 25px;
+            margin-bottom: 22px;
         }
 
         .input-group i {
             position: absolute;
-            left: 20px;
+            left: 22px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--gray-500);
             font-size: 1.2rem;
-            transition: all var(--transition-normal);
-            z-index: 1;
+            transition: var(--transition-normal);
+            z-index: 2;
+            pointer-events: none;
         }
 
         .input-group input {
             width: 100%;
-            padding: 18px 20px 18px 55px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid rgba(255, 255, 255, 0.05);
+            padding: 18px 22px 18px 58px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.06);
             border-radius: var(--radius-full);
             color: var(--light);
             font-size: 1rem;
-            transition: all var(--transition-normal);
-            position: relative;
-            z-index: 0;
+            font-weight: 500;
+            transition: var(--transition-normal);
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group input::placeholder {
+            color: var(--gray-600);
+            font-weight: 400;
+            letter-spacing: 0.2px;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(139, 92, 246, 0.1);
-            box-shadow: 0 0 30px var(--purple-glow);
+            background: rgba(124, 106, 240, 0.08);
+            box-shadow: 0 0 0 4px rgba(124, 106, 240, 0.15);
         }
 
         .input-group input:focus+i {
             color: var(--primary);
         }
 
-        .input-group input::placeholder {
-            color: var(--gray-600);
-        }
-
+        /* ===== SUBMIT BUTTON ===== */
         .login-submit {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--primary), #6b5bd6);
             color: white;
             border: none;
             border-radius: var(--radius-full);
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            transition: all var(--transition-bounce);
+            gap: 14px;
+            transition: var(--transition-bounce);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px var(--purple-glow);
+            box-shadow: 0 12px 30px rgba(124, 106, 240, 0.35);
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
         }
 
         .login-submit::before {
@@ -185,42 +299,73 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
 
         .login-submit:hover::before {
-            width: 300px;
-            height: 300px;
+            width: 400px;
+            height: 400px;
         }
 
         .login-submit:hover {
             transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 20px 40px var(--purple-glow);
+            box-shadow: 0 20px 40px rgba(124, 106, 240, 0.45);
+        }
+
+        .login-submit:active {
+            transform: scale(0.97);
         }
 
         .login-submit:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
         }
 
+        .login-submit i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .login-submit:hover i {
+            transform: translateX(4px);
+        }
+
+        /* ===== ERROR MESSAGE ===== */
         .login-error {
             display: none;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--danger-light);
-            padding: 15px 20px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+            padding: 14px 20px;
             border-radius: var(--radius-full);
             margin-top: 20px;
             text-align: center;
+            font-weight: 500;
             animation: slideIn 0.3s ease;
         }
 
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        /* ===== FOOTER ===== */
         .login-footer {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 24px;
         }
 
         .login-footer a {
@@ -228,95 +373,107 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all var(--transition-normal);
-            padding: 10px 20px;
+            gap: 10px;
+            padding: 12px 28px;
             border-radius: var(--radius-full);
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition-normal);
+            font-weight: 500;
+            font-size: 0.95rem;
         }
 
         .login-footer a:hover {
             color: var(--primary);
             border-color: var(--primary);
-            transform: translateX(-5px);
-            box-shadow: 0 4px 20px var(--purple-glow);
+            transform: translateX(-6px);
+            box-shadow: 0 6px 24px rgba(124, 106, 240, 0.25);
+            background: rgba(124, 106, 240, 0.06);
         }
 
+        .login-footer a i {
+            transition: transform 0.3s ease;
+        }
+
+        .login-footer a:hover i {
+            transform: translateX(-4px);
+        }
+
+        /* ===== RIGHT PANEL – PREMIUM TEASER (DEUTSCH) ===== */
         .login-right {
-            background: linear-gradient(135deg,
-                    rgba(139, 92, 246, 0.2),
-                    rgba(249, 115, 22, 0.2),
-                    rgba(6, 182, 212, 0.2));
-            padding: 60px 40px;
+            background: linear-gradient(145deg, rgba(124, 106, 240, 0.12), rgba(249, 115, 22, 0.10), rgba(6, 182, 212, 0.08));
+            padding: 60px 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
+            border-left: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .login-right::before {
+        .login-right::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
-            animation: rotate 20s linear infinite;
+            inset: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(124, 106, 240, 0.08), transparent 70%);
+            pointer-events: none;
         }
 
         .premium-teaser {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             max-width: 400px;
         }
 
         .premium-teaser h3 {
             font-family: var(--font-display);
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             font-weight: 800;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
         }
 
-        .premium-teaser p {
+        .premium-teaser .lead {
             color: var(--gray-300);
-            font-size: 1.2rem;
-            margin-bottom: 30px;
+            font-size: 1.15rem;
+            margin-bottom: 32px;
+            font-weight: 400;
+            line-height: 1.5;
         }
 
         .teaser-list {
             list-style: none;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
 
         .teaser-list li {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 16px;
             color: var(--gray-200);
-            font-size: 1.1rem;
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.03);
+            font-size: 1.05rem;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.02);
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: var(--transition-normal);
+            font-weight: 450;
         }
 
         .teaser-list li:hover {
-            transform: translateX(10px);
+            transform: translateX(8px);
             border-color: var(--primary);
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(124, 106, 240, 0.06);
         }
 
         .teaser-list li i {
             color: var(--success);
             font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
         .teaser-cta {
@@ -324,35 +481,51 @@
         }
 
         .teaser-cta p {
-            margin-bottom: 15px;
             color: var(--gray-400);
+            margin-bottom: 14px;
+            font-size: 0.95rem;
         }
 
-        .floating-icon {
-            position: absolute;
-            font-size: 2rem;
-            color: rgba(255, 255, 255, 0.1);
-            animation: float 6s ease infinite;
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(124, 106, 240, 0.12);
+            color: var(--light);
+            padding: 14px 32px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(124, 106, 240, 0.25);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition-normal);
+            backdrop-filter: blur(4px);
         }
 
-        .floating-icon-1 {
-            top: 10%;
-            right: 10%;
-            animation-delay: 0s;
+        .telegram-btn i {
+            color: #2aabee;
+            font-size: 1.4rem;
         }
 
-        .floating-icon-2 {
-            bottom: 20%;
-            left: 10%;
-            animation-delay: 2s;
+        .telegram-btn:hover {
+            background: rgba(124, 106, 240, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 8px 30px rgba(124, 106, 240, 0.2);
+            transform: translateY(-2px);
         }
 
-        .floating-icon-3 {
-            top: 30%;
-            left: 20%;
-            animation-delay: 4s;
+        .teaser-cta .warning-note {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            background: rgba(239, 68, 68, 0.04);
+            padding: 10px 16px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(239, 68, 68, 0.08);
+            letter-spacing: 0.2px;
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 968px) {
             .login-wrapper {
                 grid-template-columns: 1fr;
@@ -362,60 +535,70 @@
             .login-right {
                 display: none;
             }
+
+            .login-left {
+                padding: 44px 28px;
+            }
         }
 
         @media (max-width: 480px) {
             .login-left {
-                padding: 40px 20px;
+                padding: 32px 18px;
             }
 
             .login-header h2 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
 
             .input-group input {
-                padding: 15px 15px 15px 50px;
+                padding: 16px 16px 16px 50px;
+                font-size: 0.95rem;
+            }
+
+            .login-submit {
+                font-size: 1rem;
+                padding: 16px;
+            }
+
+            .login-footer a {
+                padding: 10px 20px;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
 
-<body class="login-body">
-    <!-- أيقونات عائمة -->
-    <div class="floating-icon floating-icon-1">
-        <i class="fas fa-book"></i>
-    </div>
-    <div class="floating-icon floating-icon-2">
-        <i class="fas fa-headphones"></i>
-    </div>
-    <div class="floating-icon floating-icon-3">
-        <i class="fas fa-graduation-cap"></i>
-    </div>
+<body>
+
+    <!-- Floating icons -->
+    <div class="floating-icon floating-icon-1"><i class="fas fa-book-open"></i></div>
+    <div class="floating-icon floating-icon-2"><i class="fas fa-headphones-alt"></i></div>
+    <div class="floating-icon floating-icon-3"><i class="fas fa-graduation-cap"></i></div>
+    <div class="floating-icon floating-icon-4"><i class="fas fa-language"></i></div>
 
     <div class="login-wrapper">
-        <!-- الجانب الأيسر - نموذج الدخول -->
+        <!-- LEFT: Login Form -->
         <div class="login-left">
             <div class="login-card">
                 <div class="login-header">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h2 data-en="Deutsch mit Rawad" data-ar="تعلّم الألمانية مع رواد">Deutsch mit Rawad</h2>
-                    <p data-en="Premium members area" data-ar="منطقة الأعضاء (بريميوم)">Premium members area</p>
+                    <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h2>Deutsch mit <span>Rawad</span></h2>
+                    <p class="subhead">Premium-Mitgliederbereich</p>
                 </div>
 
-                <form id="loginForm" class="login-form">
+                <form id="loginForm" class="login-form" novalidate>
                     <div class="input-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" required>
+                        <input type="text" id="loginUsername" placeholder="Benutzername" autocomplete="username" required>
                     </div>
 
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password"
-                            required>
+                        <input type="password" id="loginPassword" placeholder="Passwort" autocomplete="current-password" required>
                     </div>
 
                     <button type="submit" id="loginButton" class="login-submit">
-                        <span>تسجيل الدخول</span>
+                        <span>Anmelden</span>
                         <i class="fas fa-arrow-right"></i>
                     </button>
 
@@ -425,284 +608,174 @@
                 <div class="login-footer">
                     <a href="index.html">
                         <i class="fas fa-arrow-left"></i>
-                        <span data-en="Back to free page" data-ar="العودة إلى الصفحة المجانية">Back to free page</span>
+                        <span>Zurück zur kostenlosen Seite</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- الجانب الأيمن - العرض التسويقي -->
+        <!-- RIGHT: Premium Teaser (Deutsch) -->
         <div class="login-right">
             <div class="premium-teaser">
-                <h3 data-en="Don’t have Premium yet?" data-ar="ليس لديك حساب بريميوم بعد؟">Don’t have Premium yet?</h3>
-                <p data-en="Get access to all exclusive content:" data-ar="احصل على وصول لكل المحتوى الحصري:">Get access
-                    to all exclusive content:</p>
+                <h3>Noch kein Premium?</h3>
+                <p class="lead">Erhalte Zugang zu allen exklusiven Inhalten:</p>
 
                 <ul class="teaser-list">
-                    <li>
-                        <i class="fas fa-check-circle"></i>
-                        <span data-en="Reading – Parts 2–5" data-ar="الفهم القرائي – الأجزاء ٢–٥">Reading – Parts
-                            2–5</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-check-circle"></i>
-                        <span data-en="Listening – Parts 1–4" data-ar="الفهم السمعي – الأجزاء ١–٤">Listening – Parts
-                            1–4</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-check-circle"></i>
-                        <span data-en="More than 100 exercises" data-ar="أكثر من ١٠٠ تمرين">More than 100
-                            exercises</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-check-circle"></i>
-                        <span data-en="Instant feedback" data-ar="تصحيح فوري للإجابات">Instant feedback</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-check-circle"></i>
-                        <span data-en="Points & progress tracking" data-ar="نقاط وتتبع للتقدّم">Points & progress
-                            tracking</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-check-circle"></i>
-                        <span data-en="Lifetime access" data-ar="وصول مدى الحياة">Lifetime access</span>
-                    </li>
+                    <li><i class="fas fa-check-circle"></i> Lesen – Teile 2–5</li>
+                    <li><i class="fas fa-check-circle"></i> Hören – Teile 1–4</li>
+                    <li><i class="fas fa-check-circle"></i> Mehr als 100 Übungen</li>
+                    <li><i class="fas fa-check-circle"></i> Sofortige Rückmeldung</li>
+                    <li><i class="fas fa-check-circle"></i> Punkte & Fortschrittsverfolgung</li>
+                    <li><i class="fas fa-check-circle"></i> Lebenslanger Zugriff</li>
                 </ul>
 
                 <div class="teaser-cta">
-                    <p data-en="👋 Contact the group admin for a free account:" data-ar="👋 تواصل مع أدمن المجموعة للحصول على حساب مجاني:">👋 Contact the group admin for a free account:</p>
+                    <p>👋 Kontaktiere den Gruppenadmin für einen kostenlosen Account:</p>
                     <a href="https://t.me/mez123794" target="_blank" class="telegram-btn">
-                        <i class="fab fa-telegram"></i>
-                        @mez123794
+                        <i class="fab fa-telegram"></i> @mez123794
                     </a>
-                    <p style="margin-top: 20px; font-size: 0.9rem;"
-                        data-en="⚠️ This site was stolen before — only official accounts work here."
-                        data-ar="⚠️ تم سرقة الموقع سابقاً — الحسابات الرسمية فقط تعمل هنا.">
-                        ⚠️ This site was stolen before — only official accounts work here.
+                    <p class="warning-note">
+                        ⚠️ Diese Website wurde bereits gestohlen — nur offizielle Accounts funktionieren hier.
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- ===== SCRIPTS ===== -->
+    <script src="supabase.js"></script>
     <script>
-        window.checkSession = function () {
-            return sessionStorage.getItem('logged_in') === 'true';
-        };
+        (function() {
+            'use strict';
 
-        let allowedUsers = [];
+            // ---- Session check ----
+            window.checkSession = function() {
+                return sessionStorage.getItem('logged_in') === 'true';
+            };
 
-        async function loadUsers() {
-            try {
-                const response = await fetch('users.json');
-                if (!response.ok) throw new Error('Failed to load users');
-                const data = await response.json();
-                allowedUsers = Array.isArray(data.users) ? data.users : [];
-            } catch (err) {
-                console.error('Could not load users.json:', err);
-                allowedUsers = [];
+            if (window.checkSession()) {
+                window.location.href = 'index.html';
+                return;
             }
-        }
 
-        function validateLogin(username, password) {
-            const normalizedUsername = username.trim().toLowerCase();
-            return allowedUsers.some(function (user) {
-                return user.username.toLowerCase() === normalizedUsername &&
-                    user.password === password;
-            });
-        }
-
-        // لغة الواجهة (مشتركة مع الصفحة الرئيسية)
-        window.currentLang = localStorage.getItem('ui_lang') || 'en';
-
-        function applyLanguage(lang) {
-            window.currentLang = lang === 'ar' ? 'ar' : 'en';
-            document.documentElement.lang = window.currentLang === 'ar' ? 'ar' : 'en';
-            document.documentElement.dir = window.currentLang === 'ar' ? 'rtl' : 'ltr';
-
-            document.querySelectorAll('[data-en][data-ar]').forEach(function (el) {
-                el.textContent = window.currentLang === 'ar'
-                    ? el.getAttribute('data-ar')
-                    : el.getAttribute('data-en');
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', async function () {
-            await loadUsers();
-
-            // ========== عناصر النموذج ==========
+            // ---- DOM refs ----
             const form = document.getElementById('loginForm');
             const username = document.getElementById('loginUsername');
             const password = document.getElementById('loginPassword');
             const button = document.getElementById('loginButton');
             const errorDiv = document.getElementById('loginError');
 
-            // ========== إعادة تعيين الزر ==========
+            // ---- Helpers ----
             function resetButton() {
                 button.disabled = false;
-                const label = window.currentLang === 'ar' ? 'تسجيل الدخول' : 'Login';
-                button.innerHTML = '<span>' + label + '</span><i class="fas fa-arrow-right"></i>';
+                button.innerHTML = '<span>Anmelden</span><i class="fas fa-arrow-right"></i>';
             }
 
-            // ========== عرض الخطأ ==========
             function showError(msg) {
-                if (errorDiv) {
-                    errorDiv.textContent = msg;
-                    errorDiv.style.display = 'block';
+                errorDiv.textContent = msg;
+                errorDiv.classList.add('show');
+                form.style.animation = 'shake 0.4s ease';
+                setTimeout(function() {
+                    form.style.animation = '';
+                }, 400);
 
-                    // اهتزاز النموذج
-                    form.style.animation = 'shake 0.3s ease';
-                    setTimeout(() => {
-                        form.style.animation = '';
-                    }, 300);
-
-                    // إخفاء الخطأ بعد 4 ثواني
-                    setTimeout(() => {
-                        errorDiv.style.display = 'none';
-                    }, 4000);
-                }
+                clearTimeout(window._errorTimeout);
+                window._errorTimeout = setTimeout(function() {
+                    errorDiv.classList.remove('show');
+                }, 5000);
             }
 
-            // ========== تأثير الاهتزاز ==========
-            const style = document.createElement('style');
-            style.textContent = `
+            function showSuccess(msg) {
+                errorDiv.textContent = msg;
+                errorDiv.classList.add('show');
+                errorDiv.style.background = 'rgba(52, 211, 153, 0.08)';
+                errorDiv.style.borderColor = 'rgba(52, 211, 153, 0.25)';
+                errorDiv.style.color = '#34d399';
+            }
+
+            // ---- Shake animation ----
+            const styleShake = document.createElement('style');
+            styleShake.textContent = `
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
-                    25% { transform: translateX(-10px); }
-                    75% { transform: translateX(10px); }
+                    20% { transform: translateX(-12px); }
+                    40% { transform: translateX(12px); }
+                    60% { transform: translateX(-6px); }
+                    80% { transform: translateX(6px); }
                 }
             `;
-            document.head.appendChild(style);
+            document.head.appendChild(styleShake);
 
-            // ========== التحقق من الجلسة الحالية ==========
-            if (window.checkSession && window.checkSession()) {
-                window.location.href = 'index.html';
-                return;
-            }
+            // ---- Form submit ----
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            // ========== معالجة تقديم النموذج ==========
-            if (form) {
-                form.addEventListener('submit', async function (e) {
-                    e.preventDefault();
+                const usernameVal = username.value.trim();
+                const passwordVal = password.value.trim();
 
-                    // التحقق من المدخلات
-                    if (!username || !password) return;
-
-                    const usernameVal = username.value.trim();
-                    const passwordVal = password.value.trim();
-
-                    if (!usernameVal || !passwordVal) {
-                        showError(window.currentLang === 'ar'
-                            ? '❌ الرجاء إدخال اسم المستخدم وكلمة المرور.'
-                            : '❌ Please enter username and password.');
-                        return;
-                    }
-
-                    if (allowedUsers.length === 0) {
-                        showError(window.currentLang === 'ar'
-                            ? '❌ تعذّر تحميل قائمة المستخدمين. أعد تحميل الصفحة.'
-                            : '❌ Could not load user list. Please reload the page.');
-                        return;
-                    }
-
-                    // تعطيل الزر وعرض حالة التحميل
-                    button.disabled = true;
-                    button.innerHTML = window.currentLang === 'ar'
-                        ? '<i class="fas fa-spinner fa-spin"></i> يتم التحقق...'
-                        : '<i class="fas fa-spinner fa-spin"></i> Checking...';
-
-                    await new Promise(function (resolve) { setTimeout(resolve, 400); });
-
-                    if (validateLogin(usernameVal, passwordVal)) {
-                        sessionStorage.setItem('logged_in', 'true');
-                        sessionStorage.setItem('username', usernameVal.trim());
-                        localStorage.setItem('currentUsername', usernameVal.trim());
-
-                        showSuccess(window.currentLang === 'ar'
-                            ? '✓ تم تسجيل الدخول بنجاح، جارٍ التحويل ...'
-                            : '✓ Login successful, redirecting ...');
-
-                        setTimeout(function () {
-                            window.location.href = 'index.html';
-                        }, 500);
-                    } else {
-                        showError(window.currentLang === 'ar'
-                            ? '❌ اسم المستخدم أو كلمة المرور غير صحيحة.'
-                            : '❌ Incorrect username or password.');
-                        resetButton();
-                    }
-                });
-            }
-
-            // ========== دالة عرض النجاح ==========
-            function showSuccess(msg) {
-                if (errorDiv) {
-                    errorDiv.textContent = msg;
-                    errorDiv.style.display = 'block';
-                    errorDiv.style.background = 'rgba(16, 185, 129, 0.1)';
-                    errorDiv.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                    errorDiv.style.color = 'var(--success-light)';
+                if (!usernameVal || !passwordVal) {
+                    showError('❌ Bitte Benutzername und Passwort eingeben.');
+                    return;
                 }
-            }
 
-            // ========== دعم مفتاح Enter ==========
-            if (password) {
-                password.addEventListener('keypress', function (e) {
-                    if (e.key === 'Enter') {
-                        form.dispatchEvent(new Event('submit'));
-                    }
-                });
-            }
+                if (typeof window.loginUser !== 'function') {
+                    showError('❌ Systemfehler. Bitte Seite neu laden.');
+                    return;
+                }
 
-            // ========== تأثيرات التركيز على الحقول ==========
-            const inputs = document.querySelectorAll('.input-group input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function () {
+                // Disable button & show spinner
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Überprüfe...';
+
+                // Call Supabase login
+                const result = await window.loginUser(usernameVal, passwordVal);
+
+                if (result.success) {
+                    showSuccess('✓ Anmeldung erfolgreich! Weiterleitung ...');
+                    setTimeout(function() {
+                        window.location.href = 'index.html';
+                    }, 600);
+                } else {
+                    showError(result.message || '❌ Benutzername oder Passwort falsch.');
+                    resetButton();
+                }
+            });
+
+            // ---- Enter key support ----
+            password.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // ---- Focus effects ----
+            document.querySelectorAll('.input-group input').forEach(function(input) {
+                input.addEventListener('focus', function() {
                     this.parentElement.style.transform = 'scale(1.02)';
                 });
-
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     this.parentElement.style.transform = 'scale(1)';
                 });
             });
 
-            // ========== رسالة ترحيب عشوائية ==========
+            // ---- Random greeting (Deutsch) ----
             const greetings = [
-                {
-                    en: '👋 Welcome back!',
-                    ar: '👋 أهلاً بعودتك!'
-                },
-                {
-                    en: '🌟 Ready for a new lesson?',
-                    ar: '🌟 جاهز لدرس جديد؟'
-                },
-                {
-                    en: '🚀 Let\'s start learning now!',
-                    ar: '🚀 لنبدأ التعلم الآن!'
-                },
-                {
-                    en: '📚 Let\'s continue your practice!',
-                    ar: '📚 هيا نكمل التمارين!'
-                },
-                {
-                    en: '🎯 One more step towards your next level!',
-                    ar: '🎯 خطوة جديدة نحو مستواك القادم!'
-                }
+                '👋 Willkommen zurück!',
+                '🌟 Bereit für eine neue Lektion?',
+                '🚀 Jetzt mit dem Lernen beginnen!',
+                '📚 Übung macht den Meister!',
+                '🎯 Ein Schritt näher an deinem Ziel!'
             ];
-
             const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-            const headerP = document.querySelector('.login-header p');
-            if (headerP) {
-                headerP.textContent = window.currentLang === 'ar' ? randomGreeting.ar : randomGreeting.en;
+            const subhead = document.querySelector('.subhead');
+            if (subhead) {
+                subhead.textContent = randomGreeting;
             }
 
-            // تطبيق اللغة المحفوظة (افتراضياً English)
-            applyLanguage(window.currentLang);
-
-            // تحديث نص زر الدخول حسب اللغة
+            // ---- Reset button ----
             resetButton();
-        });
+
+        })();
     </script>
 </body>
 

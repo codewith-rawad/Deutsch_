@@ -733,31 +733,10 @@
     <!-- JavaScript -->
     <script src="supabase.js"></script>
     <script>
-        let gateAllowedUsers = [];
         let siteInitialized = false;
 
         function isSiteLoggedIn() {
-            return sessionStorage.getItem('logged_in') === 'true';
-        }
-
-        async function loadGateUsers() {
-            try {
-                const response = await fetch('users.json');
-                if (!response.ok) throw new Error('Failed to load users');
-                const data = await response.json();
-                gateAllowedUsers = Array.isArray(data.users) ? data.users : [];
-            } catch (err) {
-                console.error('Could not load users.json:', err);
-                gateAllowedUsers = [];
-            }
-        }
-
-        function validateGateLogin(username, password) {
-            const normalizedUsername = username.trim().toLowerCase();
-            return gateAllowedUsers.some(function (user) {
-                return user.username.toLowerCase() === normalizedUsername &&
-                    user.password === password;
-            });
+            return typeof window.checkSession === 'function' && window.checkSession();
         }
 
         function unlockSite() {
@@ -795,8 +774,8 @@
                     return;
                 }
 
-                if (gateAllowedUsers.length === 0) {
-                    errorDiv.textContent = '❌ تعذّر تحميل قائمة المستخدمين. أعد تحميل الصفحة.';
+                if (typeof window.loginUser !== 'function') {
+                    errorDiv.textContent = '❌ خطأ في تحميل النظام. أعد تحميل الصفحة.';
                     errorDiv.style.display = 'block';
                     return;
                 }
@@ -804,18 +783,16 @@
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>جاري التحقق...</span>';
 
-                await new Promise(function (resolve) { setTimeout(resolve, 400); });
+                // تسجيل دخول حقيقي عبر Supabase (يرسل بصمة الجهاز للسماح بجهاز واحد فقط)
+                const result = await window.loginUser(usernameVal, passwordVal);
 
-                if (validateGateLogin(usernameVal, passwordVal)) {
-                    sessionStorage.setItem('logged_in', 'true');
-                    sessionStorage.setItem('username', usernameVal);
-                    localStorage.setItem('currentUsername', usernameVal);
+                if (result.success) {
                     unlockSite();
                     if (!siteInitialized) {
                         await startSite();
                     }
                 } else {
-                    errorDiv.textContent = '❌ اسم المستخدم أو كلمة المرور غير صحيحة.';
+                    errorDiv.textContent = result.message || '❌ اسم المستخدم أو كلمة المرور غير صحيحة.';
                     errorDiv.style.display = 'block';
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-unlock"></i><span>فتح الموقع</span>';
@@ -824,8 +801,8 @@
         }
 
         window.siteLogout = function () {
-            sessionStorage.removeItem('logged_in');
-            sessionStorage.removeItem('username');
+            sessionStorage.clear();
+            if (typeof window.setToken === 'function') window.setToken(null);
             localStorage.removeItem('currentUsername');
             lockSite();
             window.scrollTo(0, 0);
@@ -962,7 +939,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function () {
-            await loadGateUsers();
             initGateLogin();
 
             if (isSiteLoggedIn()) {
