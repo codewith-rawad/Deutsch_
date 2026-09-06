@@ -299,35 +299,41 @@
 
 <body>
     <!-- شاشة الحجب — تظهر قبل تسجيل الدخول -->
-    <div id="loginGate" class="login-gate">
-        <div class="login-gate-card">
-            <div class="login-gate-icon" aria-hidden="true">
-                <i class="fas fa-shield-alt"></i>
-            </div>
-          <h1 class="login-gate-title">تم تحديث الموقع بالكامل</h1> <p class="login-gate-message"> طرأت على الموقع تعديلات جوهرية شملت المحتوى ونظام الدخول.<br> لذلك، تم إيقاف جميع الحسابات القديمة، ولم يعد بإمكانها الدخول إلى الموقع. </p> <p class="login-gate-note"> <strong>ضروري</strong> — للتعرف على الحساب الجديد وبيانات الدخول المحدثة،<br> تواصل مع أدمن المجموعة مباشرة، ولن يتمكن أي شخص من الدخول دون ذلك. </p>
-
-            <form id="gateLoginForm" class="login-gate-form">
-                <div class="login-gate-field">
-                    <label for="gateUsername">اسم المستخدم</label>
-                    <input type="text" id="gateUsername" autocomplete="username" required>
-                </div>
-                <div class="login-gate-field">
-                    <label for="gatePassword">كلمة المرور</label>
-                    <input type="password" id="gatePassword" autocomplete="current-password" required>
-                </div>
-                <button type="submit" id="gateLoginBtn" class="login-gate-submit">
-                    <i class="fas fa-unlock"></i>
-                    <span>فتح الموقع</span>
-                </button>
-                <div id="gateLoginError" class="login-gate-error"></div>
-            </form>
-
-            <a href="https://t.me/mez123794" target="_blank" class="login-gate-telegram">
-                <i class="fab fa-telegram"></i>
-                تواصل مع الأدمن عبر تيليغرام
-            </a>
+   <div id="loginGate" class="login-gate">
+    <div class="login-gate-card">
+        <div class="login-gate-icon" aria-hidden="true">
+            <img src="ChatGPT Image 22. Aug. 2026, 21_52_36.png" alt="شعار المنصة" style="width:200px;height:200px;border-radius:50%;">
+            
         </div>
+        <h1 class="login-gate-title">🎓 أهلاً بك في منصة الدورات</h1>
+        <p class="login-gate-message">
+            منصتكم الجديدة لمراجعة ودراسة الدورات بطريقة تفاعلية <br>
+           
+        </p>
+      
+
+        <form id="gateLoginForm" class="login-gate-form">
+            <div class="login-gate-field">
+                <label for="gateUsername">اسم المستخدم</label>
+                <input type="text" id="gateUsername" autocomplete="username" required>
+            </div>
+            <div class="login-gate-field">
+                <label for="gatePassword">كلمة المرور</label>
+                <input type="password" id="gatePassword" autocomplete="current-password" required>
+            </div>
+            <button type="submit" id="gateLoginBtn" class="login-gate-submit">
+                <i class="fas fa-unlock"></i>
+                <span>دخول</span>
+            </button>
+            <div id="gateLoginError" class="login-gate-error"></div>
+        </form>
+
+        <a href="https://t.me/mez123794" target="_blank" class="login-gate-telegram">
+            <i class="fab fa-telegram"></i>
+            تواصل مع الأدمن عبر تيليغرام
+        </a>
     </div>
+</div>
 
     <!-- المحتوى الكامل — يظهر بعد تسجيل الدخول فقط -->
     <div id="siteContent" class="site-content" hidden>
