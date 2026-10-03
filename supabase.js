@@ -270,3 +270,65 @@ window.loadQuestionsFile = async function (fileKey, options) {
         return null
     }
 }
+
+
+/* ================= UI helpers (Themes · Szenen · Prefetch) ================= */
+window.THEMES = [['nacht', '#17141f', '#ffcc00'], ['tag', '#f4f6fb', '#e63946'], ['meer', '#08323d', '#ff7a59'], ['wald', '#10291c', '#f2b84b']]
+document.documentElement.dataset.theme = localStorage.getItem('theme') || 'nacht'
+window.setTheme = function (t) {
+    document.documentElement.dataset.theme = t
+    localStorage.setItem('theme', t)
+    document.querySelectorAll('.tdot').forEach(b => b.classList.toggle('on', b.dataset.t === t))
+}
+window.mountThemes = function (el) {
+    if (!el) return
+    el.innerHTML = window.THEMES.map(t => `<button type="button" class="tdot" data-t="${t[0]}" aria-label="Theme ${t[0]}" style="background:linear-gradient(135deg,${t[1]} 50%,${t[2]} 50%)"></button>`).join('')
+    el.onclick = e => { const b = e.target.closest('.tdot'); if (b) window.setTheme(b.dataset.t) }
+    window.setTheme(localStorage.getItem('theme') || 'nacht')
+}
+window.SCENES = [
+    [/wohn|haus|miet|nachbar|zimmer|möbel|umzug|سكن|شقة|جار|منزل/i, '🏠', '🛋️', '🔑', 28],
+    [/arbeit|job|beruf|chef|büro|firma|kollege|fachkräfte|عمل|وظيفة|شركة/i, '💼', '🏢', '🤝', 215],
+    [/reise|urlaub|flug|hotel|ferien|koffer|سفر|رحلة|عطلة|فندق/i, '✈️', '🧳', '🏝️', 190],
+    [/essen|restaurant|kochen|kuchen|café|frühstück|brot|طعام|مطعم|طبخ/i, '🍽️', '🥨', '☕', 18],
+    [/schule|uni|kurs|lehr|student|prüfung|lernen|مدرسة|جامعة|دورة|امتحان/i, '🎓', '📚', '✏️', 250],
+    [/arzt|gesund|krank|medizin|apotheke|sport|طبيب|صحة|مريض|دواء/i, '🩺', '💊', '🏥', 160],
+    [/bahn|zug|bus|auto|verkehr|bahnhof|taxi|قطار|حافلة|سيارة|مواصلات/i, '🚆', '🚌', '🎫', 205],
+    [/wald|natur|park|berg|wandern|tier|hund|katze|غابة|طبيعة|حديقة|جبل/i, '🌲', '🦌', '🍄', 135],
+    [/fahrrad|rad|radfahr|دراجة/i, '🚲', '🌳', '☀️', 95],
+    [/handy|computer|internet|app|telefon|anruf|nachricht|هاتف|جوال|حاسوب|انترنت/i, '📱', '💻', '📞', 265],
+    [/familie|kind|eltern|mutter|vater|oma|opa|freund|hochzeit|عائلة|طفل|أم|أب|صديق|زفاف/i, '👨‍👩‍👧', '🎈', '💛', 340],
+    [/geld|bank|preis|kosten|miete|kauf|laden|markt|einkauf|مال|بنك|سعر|تسوق|سوق/i, '💶', '🛒', '🏦', 50],
+    [/wetter|regen|sonne|schnee|winter|sommer|طقس|مطر|شمس|ثلج/i, '⛅', '🌧️', '❄️', 200],
+    [/musik|konzert|film|kino|theater|fest|party|موسيقى|حفل|فيلم|سينما/i, '🎵', '🎬', '🎭', 300],
+    [/stadt|berlin|hamburg|münchen|köln|frankfurt|deutschland|مدينة|ألمانيا|برلين/i, '🏙️', '🥨', '🇩🇪', 8],
+    [/frau|mann|moderator|radio|sendung|interview|رجل|امرأة|مقدم|برنامج/i, '🎙️', '🎧', '📻', 175]
+]
+window.sceneFor = function (text, seed) {
+    const s = String(text || '')
+    let hit = window.SCENES.find(x => x[0].test(s))
+    if (!hit) {
+        let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
+        const pool = [['📖', '✨', '🔤'], ['🧠', '💡', '📝'], ['🗺️', '🧭', '📮'], ['🥨', '🍺', '🏰']][(h + (seed || 0)) % 4]
+        hit = [null, pool[0], pool[1], pool[2], h % 360]
+    }
+    return `<div class="scene" style="--h:${hit[4]}"><i class="sun"></i><b class="e1">${hit[1]}</b><b class="e2">${hit[2]}</b><b class="e3">${hit[3]}</b><u></u></div>`
+}
+window.ALL_FILES = ['lesen1', 'lesen2', 'lesen3', 'lesen4', 'lesen5', 'horen1', 'horen2', 'horen3', 'horen4']
+window.prefetchAll = function (keys) {
+    (keys || window.ALL_FILES).forEach((k, i) => setTimeout(() => { window.loadQuestionsFile(k).catch(() => { }) }, i * 120))
+}
+window.toast = function (msg) {
+    let t = document.getElementById('toast')
+    if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t) }
+    t.textContent = msg; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400)
+}
+window.markDone = function (fileKey, id) {
+    try {
+        const k = 'done_' + fileKey, set = new Set(JSON.parse(localStorage.getItem(k) || '[]'))
+        set.add(String(id)); localStorage.setItem(k, JSON.stringify([...set]))
+        const p = JSON.parse(localStorage.getItem('progress_' + fileKey) || '{}')
+        p.completed = set.size; localStorage.setItem('progress_' + fileKey, JSON.stringify(p))
+    } catch (e) { }
+}
+window.doneCount = function (fileKey) { try { return JSON.parse(localStorage.getItem('done_' + fileKey) || '[]').length } catch (e) { return 0 } }
