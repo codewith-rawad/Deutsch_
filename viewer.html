@@ -1,230 +1,279 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Übung · Deutsch mit Rawad</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Cairo:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<style>.noar .ar{display:none!important}.tapar .qcard:not(.showar) .ar{display:none!important}.trbtn{display:none}.tapar .trbtn{display:inline-block}.sectitle{margin:6px 0 16px}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Übung · Deutsch mit Rawad</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Cairo:wght@500;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .noar .ar {
+      display: none !important
+    }
+
+    .tapar .qcard:not(.showar) .ar {
+      display: none !important
+    }
+
+    .trbtn {
+      display: none
+    }
+
+    .tapar .trbtn {
+      display: inline-block
+    }
+
+    .sectitle {
+      margin: 6px 0 16px
+    }
+  </style>
 </head>
+
 <body>
-<div class="flagbar"></div>
-<header class="top"><div class="wrap">
- <a class="brand" href="index.html">Deutsch <i>Rawad</i></a><div class="sp"></div>
- <button class="pill" id="arBtn" type="button" title="الترجمة">🌐 <span>الترجمة</span></button>
- <div class="themes" id="themes"></div>
-</div></header>
-<main class="qwrap" id="app"><div class="stamp"><div class="in sk"></div></div></main>
-<script src="supabase.js"></script>
-<script>
-(function(){
-mountThemes(document.getElementById('themes'));
-const app=document.getElementById('app'),P=new URLSearchParams(location.search);
-const fileKey=P.get('file'),sIdx=P.get('index'),secIdx=P.get('section');
-const PTS=10;
-let trMode=localStorage.getItem('trMode')||'show';
-document.getElementById('arBtn').onclick=()=>{if(window._cycleTr){window._cycleTr();toast({show:'الترجمة: ظاهرة',tap:'الترجمة: عند الضغط 🌐',off:'الترجمة: مخفية'}[trMode])}};
-const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const pick=a=>a[Math.floor(Math.random()*a.length)];
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const tx=v=>v&&typeof v==='object'?{de:v.de||v.ar||v.text||'',ar:v.ar||v.text_ar||''}:{de:String(v==null?'':v),ar:''};
-const letters='ABCDEFGH';
-function fail(m){app.innerHTML=`<div class="err">${esc(m)}</div><p style="text-align:center;margin-top:16px"><a class="btn ghost" href="index.html">الرئيسية</a></p>`}
-if(!fileKey){fail('ما في ملف محدد.');return}
+  <div class="flagbar"></div>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="index.html">Deutsch <i>Rawad</i></a>
+      <div class="sp"></div>
+      <button class="pill" id="arBtn" type="button" title="الترجمة">🌐 <span>الترجمة</span></button>
+      <div class="themes" id="themes"></div>
+    </div>
+  </header>
+  <main class="qwrap" id="app">
+    <div class="stamp">
+      <div class="in sk"></div>
+    </div>
+  </main>
+  <script src="supabase.js"></script>
+  <script>
+    (function () {
+      mountThemes(document.getElementById('themes'));
+      const app = document.getElementById('app'), P = new URLSearchParams(location.search);
+      const fileKey = P.get('file'), sIdx = P.get('index'), secIdx = P.get('section');
+      const PTS = 10;
+      let trMode = localStorage.getItem('trMode') || 'show';
+      document.getElementById('arBtn').onclick = () => { if (window._cycleTr) { window._cycleTr(); toast({ show: 'الترجمة: ظاهرة', tap: 'الترجمة: عند الضغط 🌐', off: 'الترجمة: مخفية' }[trMode]) } };
+      const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const pick = a => a[Math.floor(Math.random() * a.length)];
+      const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]] } return a };
+      const tx = v => v && typeof v === 'object' ? { de: v.de || v.ar || v.text || '', ar: v.ar || v.text_ar || '' } : { de: String(v == null ? '' : v), ar: '' };
+      const letters = 'ABCDEFGH';
+      function fail(m) { app.innerHTML = `<div class="err">${esc(m)}</div><p style="text-align:center;margin-top:16px"><a class="btn ghost" href="index.html">الرئيسية</a></p>` }
+      if (!fileKey) { fail('ما في ملف محدد.'); return }
+      /* Gast: nur freie Dateien (Lesen Teil 1); alles andere -> Login */
+      if (!checkSession() && !isFreeFile(fileKey)) { location.replace('login.html'); return }
 
-/* ---------- Decks ---------- */
-const RF=[{k:'richtig',de:'Richtig',ar:'صح',fx:1},{k:'falsch',de:'Falsch',ar:'خطأ',fx:1}];
-function storyDeck(st){
- const cards=[];
- (st.questions||[]).forEach((q,i)=>{
-  if(q.texts){
-   const t=tx(pick(q.texts));
-   cards.push({de:t.de,ar:t.ar,opts:shuffle([{k:'R',de:'Richtig',ar:'صح',fx:1},{k:'F',de:'Falsch',ar:'خطأ',fx:1}]),c:String(q.answer)});
-  }else{
-   const cd=q.correct_answers_de||q.correct_answers||[],wd=q.wrong_answers_de||q.wrong_answers||[],ca=q.correct_answers_ar||[],wa=q.wrong_answers_ar||[];
-   const ci=cd.length?Math.floor(Math.random()*cd.length):0;
-   const o=[{k:'c',de:cd[ci]||'',ar:ca[ci]||''}].concat(wd.map((w,j)=>({k:'w'+j,de:w,ar:wa[j]||''}))).filter(x=>x.de);
-   cards.push({de:q.question_de||q.question||'',ar:q.question_ar||'',opts:shuffle(o),c:'c'});
-  }
- });
- return {title:st.title||'Übung',sum:{ar:st.summary_ar,de:st.summary_de},cards};
-}
-function mcFrom(q,title){
- const qt=q.question_variations&&q.question_variations.length?{de:pick(q.question_variations),ar:q.question_text_ar||''}:
-   (q.question_text&&typeof q.question_text==='object'?tx(q.question_text):{de:q.question_text_de||q.question_text||'',ar:q.question_text_ar||''});
- const o=(q.options||[]).map(op=>{const t=typeof op.text==='object'&&op.text?tx(op.text):{de:op.de||op.text||'',ar:op.ar||op.text_ar||''};return {k:String(op.id),de:t.de,ar:t.ar}});
- return {de:qt.de,ar:qt.ar,opts:shuffle(o),c:String(q.correct_answer)};
-}
-function stmt(s){
- if(s.variations&&s.variations.length){const v=Math.floor(Math.random()*s.variations.length);return {de:s.variations[v],ar:(s.variations_ar&&s.variations_ar.length?s.variations_ar[v%s.variations_ar.length]:s.original_ar)||''}}
- return {de:s.original||'',ar:s.original_ar||''};
-}
-function sectionDeck(sec){
- const cards=[],title=sec.section_title||sec.title||'';
- if(sec.ads&&sec.solution){
-  const ads=sec.ads,opts=()=>ads.map(a=>({k:String(a.id),de:(a.id+') '+(a.statements&&a.statements.length?a.statements[0]:'')).slice(0,110),ar:''})).concat([{k:'null',de:'— keine passende Anzeige',ar:'لا يوجد إعلان مناسب',fx:1}]);
-  (sec.persons||[]).forEach(p=>{let c=sec.solution[String(p.id)];c=(c==null)?'null':String(c);
-   cards.push({de:p.statements&&p.statements.length?pick(p.statements):'',ar:'',opts:opts(),c,hint:'Ordnen Sie die Person der passenden Anzeige zu.'})});
- }else if(sec.persons&&sec.persons[0]&&(sec.persons[0].answer==='JA'||sec.persons[0].answer==='NEIN')){
-  sec.persons.forEach(p=>cards.push({de:p.statements&&p.statements.length?pick(p.statements):'',ar:'',opts:shuffle([{k:'JA',de:'JA',ar:'نعم',fx:1},{k:'NEIN',de:'NEIN',ar:'لا',fx:1}]),c:String(p.answer).toUpperCase()}));
- }else if(sec.persons&&sec.persons[0]&&sec.persons[0].person_type&&!sec.questions&&!sec.statements){
-  const T={Mann:'رجل',Frau:'امرأة',Moderator:'مقدم برنامج'},items=[];
-  sec.persons.forEach(p=>(p.statements||[]).forEach(s=>{const t=stmt(s);items.push({de:t.de,ar:t.ar,c:p.person_type||'Person'})}));
-  shuffle(items).forEach(it=>cards.push({de:it.de,ar:it.ar,opts:shuffle(['Mann','Frau','Moderator'].map(t=>({k:t,de:t,ar:T[t],fx:1}))),c:it.c,hint:'Wer hat das gesagt?'}));
- }else{
-  (sec.questions||[]).forEach(q=>{
-   if(q.question_type==='richtig_falsch'){
-    const pk=q.statements&&q.statements.length?pick(q.statements):(q.question_text_de||q.question_text||'');
-    const t=typeof pk==='object'?tx(pk):{de:pk,ar:q.question_text_ar||''};
-    cards.push({de:t.de,ar:t.ar,opts:shuffle(RF),c:String(q.correct_answer).toLowerCase()});
-   }else if(q.options&&q.options.length){cards.push(mcFrom(q))}
-  });
-  (sec.statements||[]).forEach(s=>{const t=stmt(s);cards.push({de:t.de,ar:t.ar,opts:shuffle(RF),c:String(s.answer||'').toLowerCase()})});
- }
- return {title,sum:{ar:sec.summary_ar,de:sec.summary_de},cards,hint:sec.hint};
-}
+      /* ---------- Decks ---------- */
+      const RF = [{ k: 'richtig', de: 'Richtig', ar: 'صح', fx: 1 }, { k: 'falsch', de: 'Falsch', ar: 'خطأ', fx: 1 }];
+      function storyDeck(st) {
+        const cards = [];
+        (st.questions || []).forEach((q, i) => {
+          if (q.texts) {
+            const t = tx(pick(q.texts));
+            cards.push({ de: t.de, ar: t.ar, opts: shuffle([{ k: 'R', de: 'Richtig', ar: 'صح', fx: 1 }, { k: 'F', de: 'Falsch', ar: 'خطأ', fx: 1 }]), c: String(q.answer) });
+          } else {
+            const cd = q.correct_answers_de || q.correct_answers || [], wd = q.wrong_answers_de || q.wrong_answers || [], ca = q.correct_answers_ar || [], wa = q.wrong_answers_ar || [];
+            const ci = cd.length ? Math.floor(Math.random() * cd.length) : 0;
+            const o = [{ k: 'c', de: cd[ci] || '', ar: ca[ci] || '' }].concat(wd.map((w, j) => ({ k: 'w' + j, de: w, ar: wa[j] || '' }))).filter(x => x.de);
+            cards.push({ de: q.question_de || q.question || '', ar: q.question_ar || '', opts: shuffle(o), c: 'c' });
+          }
+        });
+        return { title: st.title || 'Übung', sum: { ar: st.summary_ar, de: st.summary_de }, cards };
+      }
+      function mcFrom(q, title) {
+        const qt = q.question_variations && q.question_variations.length ? { de: pick(q.question_variations), ar: q.question_text_ar || '' } :
+          (q.question_text && typeof q.question_text === 'object' ? tx(q.question_text) : { de: q.question_text_de || q.question_text || '', ar: q.question_text_ar || '' });
+        const o = (q.options || []).map(op => { const t = typeof op.text === 'object' && op.text ? tx(op.text) : { de: op.de || op.text || '', ar: op.ar || op.text_ar || '' }; return { k: String(op.id), de: t.de, ar: t.ar } });
+        return { de: qt.de, ar: qt.ar, opts: shuffle(o), c: String(q.correct_answer) };
+      }
+      function stmt(s) {
+        if (s.variations && s.variations.length) { const v = Math.floor(Math.random() * s.variations.length); return { de: s.variations[v], ar: (s.variations_ar && s.variations_ar.length ? s.variations_ar[v % s.variations_ar.length] : s.original_ar) || '' } }
+        return { de: s.original || '', ar: s.original_ar || '' };
+      }
+      function sectionDeck(sec) {
+        const cards = [], title = sec.section_title || sec.title || '';
+        if (sec.ads && sec.solution) {
+          const ads = sec.ads, opts = () => ads.map(a => ({ k: String(a.id), de: (a.id + ') ' + (a.statements && a.statements.length ? a.statements[0] : '')).slice(0, 110), ar: '' })).concat([{ k: 'null', de: '— keine passende Anzeige', ar: 'لا يوجد إعلان مناسب', fx: 1 }]);
+          (sec.persons || []).forEach(p => {
+            let c = sec.solution[String(p.id)]; c = (c == null) ? 'null' : String(c);
+            cards.push({ de: p.statements && p.statements.length ? pick(p.statements) : '', ar: '', opts: opts(), c, hint: 'Ordnen Sie die Person der passenden Anzeige zu.' })
+          });
+        } else if (sec.persons && sec.persons[0] && (sec.persons[0].answer === 'JA' || sec.persons[0].answer === 'NEIN')) {
+          sec.persons.forEach(p => cards.push({ de: p.statements && p.statements.length ? pick(p.statements) : '', ar: '', opts: shuffle([{ k: 'JA', de: 'JA', ar: 'نعم', fx: 1 }, { k: 'NEIN', de: 'NEIN', ar: 'لا', fx: 1 }]), c: String(p.answer).toUpperCase() }));
+        } else if (sec.persons && sec.persons[0] && sec.persons[0].person_type && !sec.questions && !sec.statements) {
+          /* الشخصيات تُقرأ من القسم نفسه (مو ثابتة) */
+          const T = { Mann: 'رجل', Frau: 'امرأة', Moderator: 'مقدم برنامج' }, items = [], types = [];
+          sec.persons.forEach(p => { const pt = p.person_type || 'Person'; if (!types.some(x => x.k === pt)) types.push({ k: pt, de: pt, ar: p.person_type_ar || T[pt] || '', fx: 1 }) });
+          sec.persons.forEach(p => (p.statements || []).forEach(s => { const t = stmt(s); items.push({ de: t.de, ar: t.ar, c: p.person_type || 'Person' }) }));
+          shuffle(items).forEach(it => cards.push({ de: it.de, ar: it.ar, opts: shuffle(types.map(t => ({ k: t.k, de: t.de, ar: t.ar, fx: 1 }))), c: it.c, hint: 'Wer hat das gesagt?' }));
+        } else {
+          (sec.questions || []).forEach(q => {
+            if (q.question_type === 'richtig_falsch') {
+              const pk = q.statements && q.statements.length ? pick(q.statements) : (q.question_text_de || q.question_text || '');
+              const t = typeof pk === 'object' ? tx(pk) : { de: pk, ar: q.question_text_ar || '' };
+              cards.push({ de: t.de, ar: t.ar, opts: shuffle(RF), c: String(q.correct_answer).toLowerCase() });
+            } else if (q.options && q.options.length) { cards.push(mcFrom(q)) }
+          });
+          (sec.statements || []).forEach(s => { const t = stmt(s); cards.push({ de: t.de, ar: t.ar, opts: shuffle(RF), c: String(s.answer || '').toLowerCase() }) });
+        }
+        return { title, sum: { ar: sec.summary_ar, de: sec.summary_de }, cards, hint: sec.hint };
+      }
 
-/* ---------- Listen ---------- */
-function count(sec){
- if(sec.questions)return sec.questions.length;if(sec.statements)return sec.statements.length;
- if(sec.persons)return sec.persons[0]&&sec.persons[0].statements&&!sec.persons[0].answer&&!sec.persons[0].person_type?sec.persons.reduce((a,p)=>a+(p.statements?p.statements.length:0),0):(sec.persons[0]&&sec.persons[0].person_type?sec.persons.reduce((a,p)=>a+(p.statements?p.statements.length:0),0):sec.persons.length);
- return 0;
-}
-function list(title,sub,items,href){
- app.style.maxWidth='1100px';
- app.innerHTML=`<a class="back" href="index.html">→ الرئيسية</a><h1 class="disp de sectitle" style="font-size:clamp(2rem,6vw,3.4rem)">${esc(title)}</h1><p style="color:var(--mute)">${sub}</p><div class="grid">${items.map((it,i)=>`<a class="stamp" href="${href(i)}"><div class="in">${sceneFor(it.t+' '+(it.s||''),i)}<div class="card-body"><h3 class="de">${esc(it.t)}</h3><div class="meta"><span>${it.n} سؤال</span><span class="tag">${it.d?'✓ تم':'ابدأ'}</span></div></div></div></a>`).join('')}</div>`;
-}
+      /* ---------- Listen ---------- */
+      function count(sec) {
+        if (sec.questions) return sec.questions.length; if (sec.statements) return sec.statements.length;
+        if (sec.persons) return sec.persons[0] && sec.persons[0].statements && !sec.persons[0].answer && !sec.persons[0].person_type ? sec.persons.reduce((a, p) => a + (p.statements ? p.statements.length : 0), 0) : (sec.persons[0] && sec.persons[0].person_type ? sec.persons.reduce((a, p) => a + (p.statements ? p.statements.length : 0), 0) : sec.persons.length);
+        return 0;
+      }
+      function list(title, sub, items, href) {
+        app.style.maxWidth = '1100px';
+        app.innerHTML = `<a class="back" href="index.html">→ الرئيسية</a><h1 class="disp de sectitle" style="font-size:clamp(2rem,6vw,3.4rem)">${esc(title)}</h1><p style="color:var(--mute)">${sub}</p><div class="grid">${items.map((it, i) => `<a class="stamp" href="${href(i)}"><div class="in">${sceneFor(it.t + ' ' + (it.s || ''), i)}<div class="card-body"><h3 class="de">${esc(it.t)}</h3><div class="meta"><span>${it.n} سؤال</span><span class="tag">${it.d ? '✓ تم' : 'ابدأ'}</span></div></div></div></a>`).join('')}</div>`;
+      }
 
-/* ---------- Spielen ---------- */
-function play(build,doneId,backUrl,nextUrl){
- const KEY='state_'+fileKey+'_'+doneId;
- let S=null;try{S=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
- const resumed=!!(S&&S.deck&&S.deck.cards&&S.deck.cards.length);
- if(!resumed)S={deck:build(),ans:{},cur:0,sy:0,done:false};
- S.mode=localStorage.getItem('qmode')||'list';
- S.exam=localStorage.getItem('qexam')==='1';
- const deck=S.deck,N=deck.cards.length;
- if(!N){fail('ما في أسئلة بهذا القسم.');return}
- /* هل في ترجمة حقيقية بهذا القسم؟ (تسميات صح/خطأ الثابتة ما بتنحسب) */
- const hasAr=deck.cards.some(c=>(c.ar&&String(c.ar).trim())||c.opts.some(o=>!o.fx&&o.ar&&String(o.ar).trim()))||!!(deck.sum.ar&&String(deck.sum.ar).trim());
- const arBtn=document.getElementById('arBtn');if(arBtn)arBtn.style.display=hasAr?'':'none';
- document.body.classList.toggle('noar',!hasAr||trMode==='off');
- document.body.classList.toggle('tapar',hasAr&&trMode==='tap');
- let dead=false;
- const save=()=>{if(dead)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
- const answeredN=()=>Object.keys(S.ans).length;
- const revealed=()=>!S.exam||S.done;
- const stats=()=>{let ok=0,bad=0;for(const i in S.ans){S.ans[i]===deck.cards[i].c?ok++:bad++}return{ok,bad,pts:ok*PTS}};
- const sceneText=deck.title+' '+(deck.sum.de||'')+' '+(deck.sum.ar||'')+' '+deck.cards.slice(0,3).map(c=>c.de+' '+c.ar).join(' ');
- const MODES=[['list','☰ قائمة'],['grid','▦ شبكة'],['step','▢ بطاقة بطاقة']];
- const sumHtml=(deck.sum.ar||deck.sum.de)?`<details class="summary" ${resumed?'':'open'}><summary>ملخص النص / Zusammenfassung</summary>${deck.sum.ar?`<p class="ar" style="direction:rtl">${esc(deck.sum.ar)}</p>`:''}${deck.sum.de?`<p class="de">${esc(deck.sum.de)}</p>`:''}</details>`:'';
- app.innerHTML=`<a class="back" href="${backUrl}">→ رجوع</a><div class="stamp" style="margin-bottom:18px"><div class="in"><div style="position:relative">${sceneFor(sceneText,doneId)}<div class="ttl" style="font-size:1.5rem">${esc(deck.title)}</div></div></div></div>`+sumHtml+
-  (deck.hint?`<p style="color:var(--mute);margin-bottom:12px" class="de">${esc(deck.hint)}</p>`:'')+
-  `<div class="tools"><div class="modes" id="modes"><span class="lbl">العرض</span>${MODES.map(m=>`<button type="button" data-m="${m[0]}">${m[1]}</button>`).join('')}</div>
+      /* ---------- Spielen ---------- */
+      function play(build, doneId, backUrl, nextUrl) {
+        const KEY = 'state_' + fileKey + '_' + doneId;
+        let S = null; try { S = JSON.parse(localStorage.getItem(KEY) || 'null') } catch (e) { }
+        const resumed = !!(S && S.deck && S.deck.cards && S.deck.cards.length);
+        if (!resumed) S = { deck: build(), ans: {}, cur: 0, sy: 0, done: false };
+        S.mode = localStorage.getItem('qmode') || 'list';
+        S.exam = localStorage.getItem('qexam') === '1';
+        const deck = S.deck, N = deck.cards.length;
+        if (!N) { fail('ما في أسئلة بهذا القسم.'); return }
+        /* هل في ترجمة حقيقية بهذا القسم؟ (تسميات صح/خطأ الثابتة ما بتنحسب) */
+        const hasAr = deck.cards.some(c => (c.ar && String(c.ar).trim()) || c.opts.some(o => !o.fx && o.ar && String(o.ar).trim())) || !!(deck.sum.ar && String(deck.sum.ar).trim());
+        const arBtn = document.getElementById('arBtn'); if (arBtn) arBtn.style.display = hasAr ? '' : 'none';
+        document.body.classList.toggle('noar', !hasAr || trMode === 'off');
+        document.body.classList.toggle('tapar', hasAr && trMode === 'tap');
+        let dead = false;
+        const save = () => { if (dead) return; try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { } };
+        const answeredN = () => Object.keys(S.ans).length;
+        const revealed = () => !S.exam || S.done;
+        const stats = () => { let ok = 0, bad = 0; for (const i in S.ans) { S.ans[i] === deck.cards[i].c ? ok++ : bad++ } return { ok, bad, pts: ok * PTS } };
+        const sceneText = deck.title + ' ' + (deck.sum.de || '') + ' ' + (deck.sum.ar || '') + ' ' + deck.cards.slice(0, 3).map(c => c.de + ' ' + c.ar).join(' ');
+        const MODES = [['list', '☰ قائمة'], ['grid', '▦ شبكة'], ['step', '▢ بطاقة بطاقة']];
+        const sumHtml = (deck.sum.ar || deck.sum.de) ? `<details class="summary" ${resumed ? '' : 'open'}><summary>ملخص النص / Zusammenfassung</summary>${deck.sum.ar ? `<p class="ar" style="direction:rtl">${esc(deck.sum.ar)}</p>` : ''}${deck.sum.de ? `<p class="de">${esc(deck.sum.de)}</p>` : ''}</details>` : '';
+        app.innerHTML = `<a class="back" href="${backUrl}">→ رجوع</a><div class="stamp" style="margin-bottom:18px"><div class="in"><div style="position:relative">${sceneFor(sceneText, doneId)}<div class="ttl" style="font-size:1.5rem">${esc(deck.title)}</div></div></div></div>` + sumHtml +
+          (deck.hint ? `<p style="color:var(--mute);margin-bottom:12px" class="de">${esc(deck.hint)}</p>` : '') +
+          `<div class="tools"><div class="modes" id="modes"><span class="lbl">العرض</span>${MODES.map(m => `<button type="button" data-m="${m[0]}">${m[1]}</button>`).join('')}</div>
   <div class="modes" id="styles"><span class="lbl">الأسلوب</span><button type="button" data-x="0">✎ تدريب · نتيجة فورية</button><button type="button" data-x="1">⏱ امتحان · النتيجة بالآخر</button></div>
-  <div class="modes" id="trm" ${hasAr?'':'hidden'}><span class="lbl">الترجمة</span><button type="button" data-t="show">ظاهرة</button><button type="button" data-t="tap">عند الضغط</button><button type="button" data-t="off">مخفية</button><button type="button" class="rst" id="rst">↺ من جديد</button></div>
-  ${hasAr?'':'<div class="modes"><span class="lbl" style="color:var(--mute)">هالقسم بدون ترجمة</span><button type="button" class="rst" id="rst">↺ من جديد</button></div>'}</div>
+  <div class="modes" id="trm" ${hasAr ? '' : 'hidden'}><span class="lbl">الترجمة</span><button type="button" data-t="show">ظاهرة</button><button type="button" data-t="tap">عند الضغط</button><button type="button" data-t="off">مخفية</button><button type="button" class="rst" id="rst">↺ من جديد</button></div>
+  ${hasAr ? '' : '<div class="modes"><span class="lbl" style="color:var(--mute)">هالقسم بدون ترجمة</span><button type="button" class="rst" id="rst">↺ من جديد</button></div>'}</div>
   <div class="qtop"><div class="bar"><i id="pb" style="width:0"></i></div><div class="pts" id="pt">⭐ 0</div></div><div id="stage"></div><div id="end"></div>`;
- const pb=document.getElementById('pb'),pt=document.getElementById('pt'),stage=document.getElementById('stage'),end=document.getElementById('end');
- const cardHtml=i=>{const c=deck.cards[i],cAr=hasAr&&c.ar&&String(c.ar).trim();return `<div class="stamp qcard" data-i="${i}"><div class="in"><div class="qbody"><div class="qnum"><span>${i+1}/${N}</span>${(hasAr&&(cAr||c.opts.some(o=>o.ar)))?'<button type="button" class="trbtn" aria-label="ترجمة">🌐</button>':''}</div><div class="qtext de">${esc(c.de)}${cAr?`<span class="ar">${esc(c.ar)}</span>`:''}</div>
-  <div class="opts">${c.opts.map((o,j)=>`<button class="opt" data-k="${esc(o.k)}"><b>${letters[j]||j+1}</b><span class="de">${esc(o.de)}${hasAr&&o.ar?`<span class="ar">${esc(o.ar)}</span>`:''}</span></button>`).join('')}</div><div class="fb"></div></div></div></div>`};
- function paint(card){
-  const i=+card.dataset.i,c=deck.cards[i],a=S.ans[i];
-  const opts=[...card.querySelectorAll('.opt')],fb=card.querySelector('.fb');
-  opts.forEach(b=>b.classList.remove('ok','no','sel'));
-  if(a===undefined){opts.forEach(b=>b.disabled=false);fb.classList.remove('show');return}
-  if(!revealed()){opts.forEach(b=>{b.disabled=false;if(b.dataset.k===a)b.classList.add('sel')});fb.innerHTML='<span style="color:var(--mute)">✓ تم تسجيل جوابك — تقدر تغيّره قبل الإنهاء</span>';fb.classList.add('show');return}
-  opts.forEach(b=>{b.disabled=true;if(b.dataset.k===c.c)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
-  const good=a===c.c;
-  fb.innerHTML=`<span class="${good?'g':'r'}">${good?'✓ ممتاز! +'+PTS:'✗ الجواب الصحيح مظلّل بالأخضر'}</span>`;fb.classList.add('show');
- }
- function top(){const s=stats();pb.style.width=(answeredN()/N*100)+'%';pt.textContent=revealed()?'⭐ '+s.pts:'📝 '+answeredN()+'/'+N;
-  document.querySelectorAll('.chip').forEach(ch=>{const i=+ch.dataset.i,a=S.ans[i];ch.className='chip'+(i===S.cur?' cur':'')+(a===undefined?'':(!revealed()?' sel':(a===deck.cards[i].c?' ok':' no')))})}
- function finish(){
-  if(S.exam&&!S.done){
-   end.innerHTML=answeredN()===N?`<div style="text-align:center;margin-top:24px"><button class="btn" type="button" id="fin">إنهاء الامتحان وعرض النتيجة ✓</button></div>`:'';
-   const f=document.getElementById('fin');if(f)f.onclick=()=>{S.done=true;save();render();end.scrollIntoView({behavior:'smooth',block:'center'})};
-   return;
-  }
-  if(answeredN()<N){end.innerHTML='';return}
-  const s=stats(),pc=Math.round(s.ok/N*100),pass=pc>=60;
-  if(pass)markDone(fileKey,doneId);
-  end.innerHTML=`<div class="stamp qcard" style="margin-top:26px"><div class="in" style="text-align:center;padding:30px 20px"><div style="font-size:3rem">${pc===100?'🏆':pass?'🎉':'💪'}</div><div style="font:800 4.5rem 'Bricolage Grotesque';color:var(--acc);line-height:1">${pc}%</div><h2>${pass?'ناجح — Bestanden!':'حاول مرة ثانية'}</h2><p style="color:var(--mute)">✓ ${s.ok} صح · ✗ ${s.bad} خطأ · ⭐ ${s.pts} نقطة</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">${nextUrl?`<a class="btn" href="${nextUrl}">القصة التالية ←</a>`:''}<button class="btn ghost" type="button" id="rst2">إعادة</button><a class="btn ghost" href="${backUrl}">القائمة</a></div></div></div>`;
-  document.getElementById('rst2').onclick=restart;
- }
- function restart(){dead=true;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
- function onAnswer(card,btn){
-  const i=+card.dataset.i;
-  if(revealed()&&S.ans[i]!==undefined)return;
-  if(S.exam&&S.done)return;
-  S.ans[i]=btn.dataset.k;save();paint(card);top();
-  const full=answeredN()===N;
-  finish();
-  if(full&&!S.exam)end.scrollIntoView({behavior:'smooth',block:'center'});
- }
- function render(){
-  const m=S.mode;app.style.maxWidth=m==='grid'?'1000px':'';
-  document.querySelectorAll('#modes [data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  document.querySelectorAll('#styles [data-x]').forEach(b=>b.classList.toggle('on',(b.dataset.x==='1')===S.exam));
-  document.querySelectorAll('#trm [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===trMode));
-  if(m==='step'){
-   if(S.cur<0||S.cur>=N)S.cur=0;
-   stage.innerHTML=`<div class="chips">${deck.cards.map((_,i)=>`<button type="button" class="chip" data-i="${i}">${i+1}</button>`).join('')}</div>${cardHtml(S.cur)}<div class="stepnav"><button type="button" class="btn ghost" id="pv" ${S.cur===0?'disabled':''}>→ السابق</button><button type="button" class="btn ghost" id="nv" ${S.cur===N-1?'disabled':''}>التالي ←</button></div>`;
-   stage.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{S.cur=+ch.dataset.i;save();render()});
-   document.getElementById('pv').onclick=()=>{S.cur--;save();render()};
-   document.getElementById('nv').onclick=()=>{S.cur++;save();render()};
-  }else{
-   stage.innerHTML=`<div class="qlist ${m==='grid'?'g2':''}">${deck.cards.map((_,i)=>cardHtml(i)).join('')}</div>`;
-  }
-  stage.querySelectorAll('.qcard').forEach(card=>{
-   paint(card);
-   card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>onAnswer(card,b));
-   const tb=card.querySelector('.trbtn');if(tb)tb.onclick=()=>card.classList.toggle('showar');
-  });
-  top();finish();
- }
- document.querySelectorAll('#modes [data-m]').forEach(b=>b.onclick=()=>{
-  S.mode=b.dataset.m;localStorage.setItem('qmode',S.mode);
-  if(S.mode==='step'){const f=deck.cards.findIndex((_,i)=>S.ans[i]===undefined);S.cur=f<0?0:f}
-  save();render();
- });
- document.querySelectorAll('#styles [data-x]').forEach(b=>b.onclick=()=>{
-  const ex=b.dataset.x==='1';if(ex===S.exam)return;
-  if(answeredN()&&!confirm('تغيير الأسلوب بيبدأ القصة من الأول. متابعة؟'))return;
-  localStorage.setItem('qexam',ex?'1':'0');restart();
- });
- document.querySelectorAll('#trm [data-t]').forEach(b=>b.onclick=()=>setTr(b.dataset.t));
- function setTr(t){trMode=t;localStorage.setItem('trMode',t);
-  document.body.classList.toggle('noar',!hasAr||t==='off');document.body.classList.toggle('tapar',hasAr&&t==='tap');
-  document.querySelectorAll('#trm [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
- window._cycleTr=()=>setTr({show:'tap',tap:'off',off:'show'}[trMode]||'show');
- document.getElementById('rst').onclick=()=>{if(!answeredN()||confirm('تبدأ هالقصة من الأول؟'))restart()};
- render();
- if(resumed&&S.mode!=='step'&&S.sy>0)setTimeout(()=>window.scrollTo(0,S.sy),60);
- let tk=0;window.addEventListener('scroll',()=>{if(tk)return;tk=setTimeout(()=>{tk=0;S.sy=window.scrollY;save()},250)},{passive:true});
- if(resumed&&answeredN()>0&&!S.done&&answeredN()<N)toast('كمّلنا من وين وقفت ✓');
-}
+        const pb = document.getElementById('pb'), pt = document.getElementById('pt'), stage = document.getElementById('stage'), end = document.getElementById('end');
+        const cardHtml = i => {
+          const c = deck.cards[i], cAr = hasAr && c.ar && String(c.ar).trim();
+          /* Foto nach Inhalt der Frage; sonst nach Thema der Geschichte; sonst keins */
+          const pu = photoFor(c.de + ' ' + (c.ar || ''), i) || photoFor(deck.title + ' ' + (deck.sum.de || '') + ' ' + (deck.sum.ar || ''), i);
+          const qph = pu ? `<div class="qph"><img loading="lazy" alt="" src="${pu}" onerror="this.parentNode.remove()"></div>` : '';
+          return `<div class="stamp qcard" data-i="${i}"><div class="in"><div class="qbody">${qph}<div class="qnum"><span>${i + 1}/${N}</span>${(hasAr && (cAr || c.opts.some(o => o.ar))) ? '<button type="button" class="trbtn" aria-label="ترجمة">🌐</button>' : ''}</div><div class="qtext de">${esc(c.de)}${cAr ? `<span class="ar">${esc(c.ar)}</span>` : ''}</div>
+  <div class="opts">${c.opts.map((o, j) => `<button class="opt" data-k="${esc(o.k)}"><b>${letters[j] || j + 1}</b><span class="de">${esc(o.de)}${hasAr && o.ar ? `<span class="ar">${esc(o.ar)}</span>` : ''}</span></button>`).join('')}</div><div class="fb"></div></div></div></div>`
+        };
+        function paint(card) {
+          const i = +card.dataset.i, c = deck.cards[i], a = S.ans[i];
+          const opts = [...card.querySelectorAll('.opt')], fb = card.querySelector('.fb');
+          opts.forEach(b => b.classList.remove('ok', 'no', 'sel'));
+          if (a === undefined) { opts.forEach(b => b.disabled = false); fb.classList.remove('show'); return }
+          if (!revealed()) { opts.forEach(b => { b.disabled = false; if (b.dataset.k === a) b.classList.add('sel') }); fb.innerHTML = '<span style="color:var(--mute)">✓ تم تسجيل جوابك — تقدر تغيّره قبل الإنهاء</span>'; fb.classList.add('show'); return }
+          opts.forEach(b => { b.disabled = true; if (b.dataset.k === c.c) b.classList.add('ok'); else if (b.dataset.k === a) b.classList.add('no') });
+          const good = a === c.c;
+          fb.innerHTML = `<span class="${good ? 'g' : 'r'}">${good ? '✓ ممتاز! +' + PTS : '✗ الجواب الصحيح مظلّل بالأخضر'}</span>`; fb.classList.add('show');
+        }
+        function top() {
+          const s = stats(); pb.style.width = (answeredN() / N * 100) + '%'; pt.textContent = revealed() ? '⭐ ' + s.pts : '📝 ' + answeredN() + '/' + N;
+          document.querySelectorAll('.chip').forEach(ch => { const i = +ch.dataset.i, a = S.ans[i]; ch.className = 'chip' + (i === S.cur ? ' cur' : '') + (a === undefined ? '' : (!revealed() ? ' sel' : (a === deck.cards[i].c ? ' ok' : ' no'))) })
+        }
+        function finish() {
+          if (S.exam && !S.done) {
+            end.innerHTML = answeredN() === N ? `<div style="text-align:center;margin-top:24px"><button class="btn" type="button" id="fin">إنهاء الامتحان وعرض النتيجة ✓</button></div>` : '';
+            const f = document.getElementById('fin'); if (f) f.onclick = () => { S.done = true; save(); render(); end.scrollIntoView({ behavior: 'smooth', block: 'center' }) };
+            return;
+          }
+          if (answeredN() < N) { end.innerHTML = ''; return }
+          const s = stats(), pc = Math.round(s.ok / N * 100), pass = pc >= 60;
+          if (pass) markDone(fileKey, doneId);
+          end.innerHTML = `<div class="stamp qcard" style="margin-top:26px"><div class="in" style="text-align:center;padding:30px 20px"><div style="font-size:3rem">${pc === 100 ? '🏆' : pass ? '🎉' : '💪'}</div><div style="font:800 4.5rem 'Bricolage Grotesque';color:var(--acc);line-height:1">${pc}%</div><h2>${pass ? 'ناجح — Bestanden!' : 'حاول مرة ثانية'}</h2><p style="color:var(--mute)">✓ ${s.ok} صح · ✗ ${s.bad} خطأ · ⭐ ${s.pts} نقطة</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">${nextUrl ? `<a class="btn" href="${nextUrl}">القصة التالية ←</a>` : ''}<button class="btn ghost" type="button" id="rst2">إعادة</button><a class="btn ghost" href="${backUrl}">القائمة</a></div></div></div>`;
+          document.getElementById('rst2').onclick = restart;
+        }
+        function restart() { dead = true; try { localStorage.removeItem(KEY) } catch (e) { } location.reload() }
+        function onAnswer(card, btn) {
+          const i = +card.dataset.i;
+          if (revealed() && S.ans[i] !== undefined) return;
+          if (S.exam && S.done) return;
+          S.ans[i] = btn.dataset.k; save(); paint(card); top();
+          const full = answeredN() === N;
+          finish();
+          if (full && !S.exam) end.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        function render() {
+          const m = S.mode; app.style.maxWidth = m === 'grid' ? '1000px' : '';
+          document.querySelectorAll('#modes [data-m]').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+          document.querySelectorAll('#styles [data-x]').forEach(b => b.classList.toggle('on', (b.dataset.x === '1') === S.exam));
+          document.querySelectorAll('#trm [data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === trMode));
+          if (m === 'step') {
+            if (S.cur < 0 || S.cur >= N) S.cur = 0;
+            stage.innerHTML = `<div class="chips">${deck.cards.map((_, i) => `<button type="button" class="chip" data-i="${i}">${i + 1}</button>`).join('')}</div>${cardHtml(S.cur)}<div class="stepnav"><button type="button" class="btn ghost" id="pv" ${S.cur === 0 ? 'disabled' : ''}>→ السابق</button><button type="button" class="btn ghost" id="nv" ${S.cur === N - 1 ? 'disabled' : ''}>التالي ←</button></div>`;
+            stage.querySelectorAll('.chip').forEach(ch => ch.onclick = () => { S.cur = +ch.dataset.i; save(); render() });
+            document.getElementById('pv').onclick = () => { S.cur--; save(); render() };
+            document.getElementById('nv').onclick = () => { S.cur++; save(); render() };
+          } else {
+            stage.innerHTML = `<div class="qlist ${m === 'grid' ? 'g2' : ''}">${deck.cards.map((_, i) => cardHtml(i)).join('')}</div>`;
+          }
+          stage.querySelectorAll('.qcard').forEach(card => {
+            paint(card);
+            card.querySelectorAll('.opt').forEach(b => b.onclick = () => onAnswer(card, b));
+            const tb = card.querySelector('.trbtn'); if (tb) tb.onclick = () => card.classList.toggle('showar');
+          });
+          top(); finish();
+        }
+        document.querySelectorAll('#modes [data-m]').forEach(b => b.onclick = () => {
+          S.mode = b.dataset.m; localStorage.setItem('qmode', S.mode);
+          if (S.mode === 'step') { const f = deck.cards.findIndex((_, i) => S.ans[i] === undefined); S.cur = f < 0 ? 0 : f }
+          save(); render();
+        });
+        document.querySelectorAll('#styles [data-x]').forEach(b => b.onclick = () => {
+          const ex = b.dataset.x === '1'; if (ex === S.exam) return;
+          if (answeredN() && !confirm('تغيير الأسلوب بيبدأ القصة من الأول. متابعة؟')) return;
+          localStorage.setItem('qexam', ex ? '1' : '0'); restart();
+        });
+        document.querySelectorAll('#trm [data-t]').forEach(b => b.onclick = () => setTr(b.dataset.t));
+        function setTr(t) {
+          trMode = t; localStorage.setItem('trMode', t);
+          document.body.classList.toggle('noar', !hasAr || t === 'off'); document.body.classList.toggle('tapar', hasAr && t === 'tap');
+          document.querySelectorAll('#trm [data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === t))
+        }
+        window._cycleTr = () => setTr({ show: 'tap', tap: 'off', off: 'show' }[trMode] || 'show');
+        document.getElementById('rst').onclick = () => { if (!answeredN() || confirm('تبدأ هالقصة من الأول؟')) restart() };
+        render();
+        if (resumed && S.mode !== 'step' && S.sy > 0) setTimeout(() => window.scrollTo(0, S.sy), 60);
+        let tk = 0; window.addEventListener('scroll', () => { if (tk) return; tk = setTimeout(() => { tk = 0; S.sy = window.scrollY; save() }, 250) }, { passive: true });
+        if (resumed && answeredN() > 0 && !S.done && answeredN() < N) toast('كمّلنا من وين وقفت ✓');
+      }
 
-/* ---------- Router ---------- */
-loadQuestionsFile(fileKey).then(data=>{
- if(!data){fail('تعذّر تحميل الأسئلة. تأكد من الاتصال أو سجّل الدخول من جديد.');return}
- const back='viewer.html?file='+encodeURIComponent(fileKey);
- if(Array.isArray(data)){
-  const k=parseInt(sIdx,10);
-  if(!isNaN(k)&&data[k]){play(()=>storyDeck(data[k]),k,back,data[k+1]?back+'&index='+(k+1):null);return}
-  list(fileKey.toUpperCase(),'اختر قصة وابدأ',data.map((s,i)=>({t:s.title||'Übung '+(i+1),n:(s.questions||[]).length,d:JSON.parse(localStorage.getItem('done_'+fileKey)||'[]').includes(String(i))})),i=>back+'&index='+i);
-  return;
- }
- if(data.sections&&data.sections.length){
-  const k=parseInt(secIdx,10);
-  if(!isNaN(k)&&data.sections[k]){play(()=>sectionDeck(data.sections[k]),k,back,data.sections[k+1]?back+'&section='+(k+1):null);return}
-  const dn=JSON.parse(localStorage.getItem('done_'+fileKey)||'[]');
-  list(data.name||fileKey.toUpperCase(),'اختر جزءاً وابدأ',data.sections.map((s,i)=>({t:s.section_title||s.title||'Teil '+(i+1),s:s.subtitle||s.theme||'',n:count(s),d:dn.includes(String(i))})),i=>back+'&section='+i);
-  return;
- }
- fail('صيغة البيانات غير معروفة.');
-}).catch(()=>fail('حدث خطأ أثناء التحميل.'));
-})();
-</script>
+      /* ---------- Router ---------- */
+      loadQuestionsFile(fileKey).then(data => {
+        if (!data) { fail('تعذّر تحميل الأسئلة. تأكد من الاتصال أو سجّل الدخول من جديد.'); return }
+        const back = 'viewer.html?file=' + encodeURIComponent(fileKey);
+        if (Array.isArray(data)) {
+          const k = parseInt(sIdx, 10);
+          if (!isNaN(k) && data[k]) { play(() => storyDeck(data[k]), k, back, data[k + 1] ? back + '&index=' + (k + 1) : null); return }
+          list(fileKey.toUpperCase(), 'اختر قصة وابدأ', data.map((s, i) => ({ t: s.title || 'Übung ' + (i + 1), n: (s.questions || []).length, d: JSON.parse(localStorage.getItem('done_' + fileKey) || '[]').includes(String(i)) })), i => back + '&index=' + i);
+          return;
+        }
+        if (data.sections && data.sections.length) {
+          const k = parseInt(secIdx, 10);
+          if (!isNaN(k) && data.sections[k]) { play(() => sectionDeck(data.sections[k]), k, back, data.sections[k + 1] ? back + '&section=' + (k + 1) : null); return }
+          const dn = JSON.parse(localStorage.getItem('done_' + fileKey) || '[]');
+          list(data.name || fileKey.toUpperCase(), 'اختر جزءاً وابدأ', data.sections.map((s, i) => ({ t: s.section_title || s.title || 'Teil ' + (i + 1), s: s.subtitle || s.theme || '', n: count(s), d: dn.includes(String(i)) })), i => back + '&section=' + i);
+          return;
+        }
+        fail('صيغة البيانات غير معروفة.');
+      }).catch(() => fail('حدث خطأ أثناء التحميل.'));
+    })();
+  </script>
 </body>
+
 </html>
